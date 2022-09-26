@@ -1,0 +1,1284 @@
+- ns: 
+  name: 
+  url: 
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+  desc: |-
+    xxx
+    2
+
+---
+
+descriptions:
+- ns: openshift-apiserver-operator
+  name: openshift-apiserver-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-openshift-apiserver-operator
+  crd:
+    - name: apiservers.config.openshift.io
+      kind: APIServer
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_apiserver.crd.yaml
+    - name: openshiftapiservers.operator.openshift.io
+      kind: OpenShiftAPIServer
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_30_openshift-apiserver-operator_01_config.crd.yaml
+  desc: |-
+    openshift-apiserverを管理するOperator
+
+- ns: openshift-apiserver
+  name: apiserver-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/openshift-apiserver
+  crd:
+    - name: apiservers.config.openshift.io
+      kind: APIServer
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_apiserver.crd.yaml
+    - name: openshiftapiservers.operator.openshift.io
+      kind: OpenShiftAPIServer
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_30_openshift-apiserver-operator_01_config.crd.yaml
+  desc: |-
+    Aggregation Layer経由でOpenShift特有のAPIを処理する
+    - v1.apps.openshift.io
+    - v1.authorization.openshift.io
+    - v1.build.openshift.io
+    - v1.image.openshift.io
+    - v1.project.openshift.io
+    - v1.quota.openshift.io
+    - v1.route.openshift.io
+    - v1.security.openshift.io
+    - v1.template.openshift.io"
+
+- ns: openshift-authentication-operator
+  name: authentication-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-authentication-operator
+  crd:
+    - name: rolebindingrestrictions.authorization.openshift.io
+      kind: RoleBindingRestriction
+      apiversion: authorization.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/authorization/v1/0000_03_authorization-openshift_01_rolebindingrestriction.crd.yaml
+    - name: authentications.config.openshift.io
+      kind: Authentication
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_authentication.crd.yaml
+    - name: oauths.config.openshift.io
+      kind: OAuth
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_oauth.crd.yaml
+    - name: authentications.operator.openshift.io
+      kind: Authentication
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_50_cluster-authentication-operator_01_config.crd.yaml
+  desc: |-
+    oauth-serverを管理するOperator
+
+- ns: openshift-authentication
+  name: oauth-openshift-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/oauth-server
+  crd:
+    - name: oauths.config.openshift.io
+      kind: OAuth
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_oauth.crd.yaml
+  desc: |-
+    OpenShift integrated OAuth server
+
+- ns: openshift-cloud-controller-manager-operator
+  name: cluster-cloud-controller-manager-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-cloud-controller-manager-operator
+  crd:
+    - name: openshiftcontrollermanagers.operator.openshift.io
+      kind: OpenShiftControllerManager
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_50_cluster-openshift-controller-manager-operator_02_config.crd.yaml
+  desc: |-
+    CCCMO: Cluster Cloud Controller Manager operator
+    
+    cloud-controller-managerを管理するOperator
+
+- ns: openshift-cloud-credential-operator
+  name: cloud-credential-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cloud-credential-operator
+  crd:
+    - name: credentialsrequests.cloudcredential.openshift.io
+      kind: CredentialsRequest
+      apiversion: cloudcredential.openshift.io/v1
+      url: https://github.com/openshift/cloud-credential-operator/blob/master/manifests/00-crd.yaml
+    - name: cloudcredentials.operator.openshift.io
+      kind: CloudCredential
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_40_cloud-credential-operator_00_config.crd.yaml
+  desc: |-
+    CCO: Cloud Credential Operator
+
+    Cloud Providerの認証情報を管理するOperator
+    https://docs.openshift.com/container-platform/4.6/installing/installing_aws/manually-creating-iam.html#alternatives-to-storing-admin-secrets-in-kube-system_manually-creating-iam-aws
+
+- ns: openshift-cloud-credential-operator
+  name: pod-identity-webhook-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/aws-pod-identity-webhook
+  desc: |-
+    AWSのIAMアクセスが必要なPodのためのMutating Webhook。
+    AWSアクセスするPod用にIAM roleを作成し、PodのService Accountがそのroleを使用するようにtrust policyを変更する
+
+- ns: openshift-cloud-network-config-controller
+  name: cloud-network-config-controller-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cloud-network-config-controller
+  crd:
+    - name: cloudprivateipconfigs.cloud.network.openshift.io
+      kind: CloudPrivateIPConfig
+      apiversion: cloud.network.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/cloudnetwork/v1/001-cloudprivateipconfig.crd.yaml
+  desc: |-
+    CNCC: Cluster Network Config Controller
+
+    カスタムリソース経由で、クラウド環境のAPIエンドポイントと通信してクラウド環境のネットワーク設定を行うOperator。
+    現時点では、CloudPrivateIPConfigを使ってk8sノードのVMインスタンスに対してプライベートIPアドレスの追加/削除を行うのみ。
+
+- ns: openshift-cluster-csi-drivers
+  name: aws-ebs-csi-driver-controller-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/aws-ebs-csi-driver
+  desc: |-
+    AWS EBS用のCSIドライバのController Plugin
+
+- ns: openshift-cluster-csi-drivers
+  name: aws-ebs-csi-driver-node-XXXXX
+  url: https://github.com/openshift/aws-ebs-csi-driver
+  desc: |-
+    AWS EBS用のCSIドライバのNode Plugin
+
+- ns: openshift-cluster-csi-drivers
+  name: aws-ebs-csi-driver-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/aws-ebs-csi-driver-operator
+  desc: |-
+    AWS EBS CSI driverをデプロイするOperator (https://github.com/openshift/aws-ebs-csi-driver)。
+    このOperatorは、cluster-storage-operatorからインストールされる。
+
+- ns: openshift-cluster-machine-approver
+  name: machine-approver-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-machine-approver
+  desc: |-
+    Kubeletのクライアント証明書、サーバー証明書のCSRを承認/拒否するOperator
+
+- ns: openshift-cluster-node-tuning-operator
+  name: cluster-node-tuning-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-node-tuning-operator
+  crd:
+    - name: tuneds.tuned.openshift.io
+      kind: Tuned
+      apiversion: tuned.openshift.io/v1
+      url: https://github.com/openshift/cluster-node-tuning-operator/blob/master/manifests/20-tuned.crd.yaml
+    - name: profiles.tuned.openshift.io
+      kind: Profile
+      apiversion: tuned.openshift.io/v1
+      url: https://github.com/openshift/cluster-node-tuning-operator/blob/master/manifests/20-profile.crd.yaml
+    - name: performanceprofiles.performance.openshift.io
+      kind: PerformanceProfile
+      apiversion: performance.openshift.io/v2
+      url: https://github.com/openshift/cluster-node-tuning-operator/blob/master/manifests/20-performance-profile.crd.yaml
+  desc: |-
+    NTO: Node Tuning Operator
+
+    Tunedを使ってクラスターのノードレベルのチューニングを行うOperator。
+    v4.10までPerformance Addon Operatorは、v4.11からNTOに統合されている。
+
+- ns: openshift-cluster-node-tuning-operator
+  name: tuned-XXXXX
+  url: https://github.com/openshift/cluster-node-tuning-operator
+  crd:
+    - name: tuneds.tuned.openshift.io
+      kind: Tuned
+      apiversion: tuned.openshift.io/v1
+      url: https://github.com/openshift/cluster-node-tuning-operator/blob/master/manifests/20-tuned.crd.yaml
+    - name: profiles.tuned.openshift.io
+      kind: Profile
+      apiversion: tuned.openshift.io/v1
+      url: https://github.com/openshift/cluster-node-tuning-operator/blob/master/manifests/20-profile.crd.yaml
+    - name: performanceprofiles.performance.openshift.io
+      kind: PerformanceProfile
+      apiversion: performance.openshift.io/v2
+      url: https://github.com/openshift/cluster-node-tuning-operator/blob/master/manifests/20-performance-profile.crd.yaml
+  desc: |-
+    NTOの設定をtunedを使って反映させるために各ノードで稼動するDaemonSet
+
+- ns: openshift-cluster-samples-operator
+  name: cluster-samples-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-samples-operator
+  crd:
+    - name: configs.samples.operator.openshift.io
+      kind: Config
+      apiversion: samples.operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/samples/v1/0000_10_samplesconfig.crd.yaml
+  desc: |-
+    `openshift` namespace内のRHELベースのImageStreamやTemplateを管理するOperator
+
+- ns: openshift-cluster-storage-operator
+  name: cluster-storage-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-storage-operator
+  crd:
+    - name: storages.operator.openshift.io
+      kind: Storage
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_50_cluster_storage_operator_01_crd.yaml
+  desc: |-
+    クラスター全体のデフォルトのStorageClassを管理するOperator (cf. addon-manager for k8s)。
+    AWS、OpenStack環境をのみサポート。
+    作成されたStorageClassをnon-defaultに設定するには、annotation (storageclass.kubernetes.io/is-default-class) を編集する。
+
+- ns: openshift-cluster-storage-operator
+  name: csi-snapshot-controller-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/csi-external-snapshotter
+  desc: |-
+    カスタムリソースVolumeSnapshot, VolumeSnapshotContentをwatchし、CSI Volume Snapshotのライフサイクルを管理するコントローラ。
+    Node Pluginのexternal-snapshotterと連携してCSIボリュームを制御する。
+
+- ns: openshift-cluster-storage-operator
+  name: csi-snapshot-controller-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-csi-snapshot-controller-operator
+  crd:
+    - name: csisnapshotcontrollers.operator.openshift.io
+      kind: CSISnapshotController
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_80_csi_snapshot_controller_operator_01_crd.yaml
+  desc: |-
+    CSI Snapshot Controllerの管理をするOperator
+
+- ns: openshift-cluster-storage-operator
+  name: csi-snapshot-webhook-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/csi-external-snapshotter
+  desc: |-
+    カスタムリソースVolumeSnapshot, VolumeSnapshotContentのvalidationを行うAdmission Webhook
+
+- ns: openshift-cluster-version
+  name: cluster-version-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-version-operator
+  crd:
+    - name: clusteroperators.config.openshift.io
+      kind: ClusterOperator
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_00_cluster-version-operator_01_clusteroperator.crd.yaml
+    - name: clusterversions.config.openshift.io
+      kind: ClusterVersion
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_00_cluster-version-operator_01_clusterversion.crd.yaml
+  desc: |-
+    CVO: Cluster Version Operator
+
+    クラスターのアップデートを管理するOperator
+    https://github.com/openshift/enhancements/blob/master/dev-guide/cluster-version-operator/user/update-workflow.md
+
+- ns: openshift-config-operator
+  name: openshift-config-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-config-operator
+  crd:
+    - name: configs.operator.openshift.io
+      kind: Config
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_10_config-operator_01_config.crd.yaml
+    - name: proxies.config.openshift.io
+      kind: Proxy
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_03_config-operator_01_proxy.crd.yaml
+    - name: apiservers.config.openshift.io
+      kind: APIServer
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_apiserver.crd.yaml
+    - name: authentications.config.openshift.io
+      kind: Authentication
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_authentication.crd.yaml
+    - name: builds.config.openshift.io
+      kind: Build
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_build.crd.yaml
+    - name: consoles.config.openshift.io
+      kind: Console
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_console.crd.yaml
+    - name: dnses.config.openshift.io
+      kind: DNS
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_dns.crd.yaml
+    - name: featuregates.config.openshift.io
+      kind: FeatureGate
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_featuregate.crd.yaml
+    - name: images.config.openshift.io
+      kind: Image
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_image.crd.yaml
+    - name: imagecontentpolicies.config.openshift.io
+      kind: ImageContentPolicy
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_imagecontentpolicy.crd.yaml
+    - name: infrastructures.config.openshift.io
+      kind: Infrastructure
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_infrastructure.crd.yaml
+    - name: ingresses.config.openshift.io
+      kind: Ingress
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_ingress.crd.yaml
+    - name: networks.config.openshift.io
+      kind: Network
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_network.crd.yaml
+    - name: nodes.config.openshift.io
+      kind: Node
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_node.crd.yaml
+    - name: oauths.config.openshift.io
+      kind: OAuth
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_oauth.crd.yaml
+    - name: projects.config.openshift.io
+      kind: Project
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_project.crd.yaml
+    - name: schedulers.config.openshift.io
+      kind: Scheduler
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_scheduler.crd.yaml
+    - name: imagecontentsourcepolicies.operator.openshift.io
+      kind: ImageContentSourcePolicy
+      apiversion: operator.openshift.io/v1alpha1
+      url: https://github.com/openshift/api/blob/master/operator/v1alpha1/0000_10_config-operator_01_imagecontentsourcepolicy.crd.yaml
+  desc: |-
+    config.openshift.io等、クラスター全体の設定を管理するOperator
+
+- ns: openshift-console-operator
+  name: console-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/console-operator
+  crd:
+    - name: consoles.config.openshift.io
+      kind: Console
+  desc: |-
+    Web Consoleを管理するOperator
+
+- ns: openshift-console
+  name: console-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/console
+  crd:
+    - name: consoles.config.openshift.io
+      kind: Console
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_console.crd.yaml
+    - name: consoles.operator.openshift.io
+      kind: Console
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_70_console-operator.crd.yaml
+    - name: consoleclidownloads.console.openshift.io
+      kind: ConsoleCLIDownload
+      apiversion: console.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/console/v1/0000_10_consoleclidownload.crd.yaml
+    - name: consoleexternalloglinks.console.openshift.io
+      kind: ConsoleExternalLogLink
+      apiversion: console.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/console/v1/0000_10_consoleexternalloglink.crd.yaml
+    - name: consolelinks.console.openshift.io
+      kind: ConsoleLink
+      apiversion: console.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/console/v1/0000_10_consolelink.crd.yaml
+    - name: consolenotifications.console.openshift.io
+      kind: ConsoleNotification
+      apiversion: console.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/console/v1/0000_10_consolenotification.crd.yaml
+    - name: consolequickstarts.console.openshift.io
+      kind: ConsoleQuickStart
+      apiversion: console.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/console/v1/0000_10_consolequickstart.crd.yaml
+    - name: consoleyamlsamples.console.openshift.io
+      kind: ConsoleYAMLSample
+      apiversion: console.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/console/v1/0000_10_consoleyamlsample.crd.yaml
+    - name: consoleplugins.console.openshift.io
+      kind: ConsolePlugin
+      apiversion: console.openshift.io/v1alpha1
+      url: https://github.com/openshift/api/blob/master/console/v1alpha1/0000_10_consoleplugin.crd.yaml
+  desc: |-
+    Web console本体。GUIによるkubectlでの操作を提供する。
+    MonitoringやOLMの操作、ユーザー認証、Kubernetes標準ではないAPIのプロキシー等の機能を統合。
+
+- ns: openshift-console
+  name: downloads-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/console-operator/blob/release-4.11/bindata/deployments/downloads-deployment.yaml
+  desc: |-
+    下記arch/os用のocコマンドのバイナリをhttpで配布するPod
+    - linux_amd64
+    - linux_arm64
+    - linux_ppc64le
+    - linux_s390x
+    - mac
+    - windows
+
+    manifestのcommand/argsの中でPythonのhttp.server.SimpleHTTPRequestHandlerを使った簡易HTTPサーバをヒアドキュメントで作成し、それを起動する
+
+- ns: openshift-controller-manager-operator
+  name: openshift-controller-manager-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-openshift-controller-manager-operator
+  crd:
+    - name: openshiftcontrollermanagers.operator.openshift.io
+      kind: OpenShiftControllerManager
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_50_cluster-openshift-controller-manager-operator_02_config.crd.yaml
+  desc: |-
+    openshift-controller-managerを管理するOperator。
+
+- ns: openshift-controller-manager
+  name: controller-manager-XXXXX
+  url: https://github.com/openshift/openshift-controller-manager
+  crd:
+    - name: openshiftcontrollermanagers.operator.openshift.io
+      kind: OpenShiftControllerManager
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_50_cluster-openshift-controller-manager-operator_02_config.crd.yaml
+  desc: |-
+    下記API groupを管理するコントローラーマネージャーの集合体
+    - apps.openshift.io: DeploymentConfigs
+    - build.openshift.io: Builds, BuildConfigs
+    - image.openshift.io: ImageStreams, Images
+    - project.openshift.io: Projects
+    - route.openshift.io: Routes
+    - template.openshift.io: Templates
+
+- ns: openshift-dns-operator
+  name: dns-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-dns-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_dns.crd.yaml
+    - name: dnses.config.openshift.io
+      kind: DNS
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_dns.crd.yaml
+  desc: |-
+    xxx
+
+    machineset-controller: /machineset-controller
+    machine-controller: /machine-controller-manager
+    nodelink-controller: /nodelink-controller
+    machine-healthcheck-controller: /machine-healthcheck
+    kube-rbac-proxy-machineset-mtrc: /usr/bin/kube-rbac-proxy
+    kube-rbac-proxy-machine-mtrc: /usr/bin/kube-rbac-proxy
+    kube-rbac-proxy-mhc-mtrc: /usr/bin/kube-rbac-proxy
+
+    mtrcはおそらくmetrics
+
+- ns: openshift-dns
+  name: dns-default-XXXXX
+  url: https://github.com/openshift/coredns
+  desc: |-
+    OpenShiftの内部DNS (CoreDNS)
+
+- ns: openshift-dns
+  name: node-resolver-XXXXX
+  url: https://github.com/openshift/cluster-dns-operator/blob/master/assets/node-resolver/update-node-resolver.sh
+  desc: |-
+    各ノードの/etc/hostsを管理する (内部コンテナレジストリのcluster.localの情報を/etc/hostsに追記する)
+
+- ns: openshift-etcd-operator
+  name: etcd-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-etcd-operator
+  crd:
+    - name: etcds.operator.openshift.io
+      kind: Etcd
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_12_etcd-operator_01_config.crd.yaml
+  desc: |-
+    etcdの管理を行うOperator
+    - bootstrap時のスケールアップ
+    - 通常時の運用
+    - TLS certificateの管理
+
+- ns: openshift-etcd
+  name: etcd-guard-HOSTNAME
+  url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
+  desc: |-
+    ノードdrain時にetcdのquorumを保つための仕組み。例えばmasterノードを順に再起動するような場合に、etcdが起動する前に次のノードの再起動が行われないようにする。
+
+    etcd-quorum-guardは各masterノードに1台ずつ稼動しており、PID 1は何もしていないが、Readyness Probeで自ノードのetcdのヘルスチェックを行なう。つまり、etcdが落ちていると、etcd-quorum-guardがnot readyになる。
+    openshift-etcd namespaceに設定されたPodDisruptionBudgetとetcd-quorum-guardのReadyness Probeを組み合わせることにより、etcd Podのquorumが常に確保できる(etcd Podが常に2台以上稼動する)ことになる。
+
+    https://github.com/openshift/cluster-etcd-operator/blob/master/docs/etcd-quorum-guard.md
+
+- ns: openshift-etcd
+  name: etcd-HOSTNAME
+  url: https://github.com/openshift/etcd
+  desc: |-
+    etcd本体
+
+- ns: openshift-image-registry
+  name: cluster-image-registry-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-image-registry-operator
+  crd:
+    - name: imagecontentpolicies.config.openshift.io
+      kind: ImageContentPolicy
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_imagecontentpolicy.crd.yaml
+    - name: images.config.openshift.io
+      kind: Image
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_image.crd.yaml
+    - name: configs.imageregistry.operator.openshift.io
+      kind: Config
+      apiversion: imageregistry.operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/imageregistry/v1/00_imageregistry.crd.yaml
+    - name: imagepruners.imageregistry.operator.openshift.io
+      kind: ImagePruner
+      apiversion: imageregistry.operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/imageregistry/v1/01_imagepruner.crd.yaml
+    - name: imagecontentsourcepolicies.operator.openshift.io
+      kind: ImageContentSourcePolicy
+      apiversion: operator.openshift.io/v1alpha1
+      url: https://github.com/openshift/api/blob/master/operator/v1alpha1/0000_10_config-operator_01_imagecontentsourcepolicy.crd.yaml
+  desc: |-
+    必要なPVの作成含め、内部イメージレジストリの設定を管理するOperator。
+    クラスターの初期構築時、クラスターの構成情報(特にストレージ)を見て内部イメージレジストリのリソースを作成する。
+
+- ns: openshift-image-registry
+  name: image-registry-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/image-registry
+  crd:
+    - name: imagecontentpolicies.config.openshift.io
+      kind: ImageContentPolicy
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_imagecontentpolicy.crd.yaml
+    - name: images.config.openshift.io
+      kind: Image
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_image.crd.yaml
+    - name: imagecontentsourcepolicies.operator.openshift.io
+      kind: ImageContentSourcePolicy
+      apiversion: operator.openshift.io/v1alpha1
+      url: https://github.com/openshift/api/blob/master/operator/v1alpha1/0000_10_config-operator_01_imagecontentsourcepolicy.crd.yaml
+  desc: |-
+    OpenShiftの内部イメージレジストリ
+    - 外部レジストリからイメージをpullしてキャッシュする
+    - RBAC
+    - Audit log
+    - Prometheus metrics
+
+- ns: openshift-image-registry
+  name: node-ca-XXXXX
+  url: https://github.com/openshift/cluster-image-registry-operator/blob/master/bindata/nodecadaemon.yaml
+  desc: |-
+    各ノードの/etc/docker/certs.dのファイルを更新する
+
+- ns: openshift-ingress-canary
+  name: ingress-canary-XXXXX
+  url: https://github.com/openshift/cluster-ingress-operator
+  desc: |-
+    ingress-canaryは、HTTP, HTTP/2, gRPC用のechoサーバ(実体は `ingress-operator serve-healthchek`) が稼動するPod。
+    ingress-operatorからcanary Podに対して定期的にRouter経由でアクセスし、Routeの稼動確認を行っている。
+
+    https://github.com/openshift/enhancements/blob/master/enhancements/ingress/ingress-fault-detection.md
+
+- ns: openshift-ingress-operator
+  name: ingress-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-ingress-operator
+  crd:
+    - name: ingresses.config.openshift.io
+      kind: Ingress
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_ingress.crd.yaml
+    - name: ingresscontrollers.operator.openshift.io
+      kind: IngressController
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_50_ingress-operator_00-ingresscontroller.crd.yaml
+  desc: |-
+    Ingress Controllerの管理を行うOperator。OpenShift Router (HAProxyベースのIngress Controller) をデプロイ/管理する
+
+- ns: openshift-ingress
+  name: router-default-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/router
+  crd:
+    - name: routes.route.openshift.io
+      kind: Route
+      apiversion: route.openshift.io/v1
+      url: https://github.com/openshift/router/blob/master/deploy/route_crd.yaml
+  desc: |-
+    OpenShiftのIngress (HAProxyベースのRouter)。
+    PID1はopenshift-routerで、クラスターの状態をwatchして設定ファイルを生成し、HAProxyを子プロセスとして起動し、設定ファイルが更新されたら必要に応じてリロードする。
+
+- ns: openshift-insights
+  name: insights-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/insights-operator
+  desc: |-
+    匿名化されたシステム設定情報の収集と、Red Hat Insights へのレポートを行う。
+    収集されたデータは、クラスタの問題や予期しないエラーのデバッグに利用される。
+
+    Insights Advisor, Cost management, Subscription watch
+
+- ns: openshift-kube-apiserver-operator
+  name: kube-apiserver-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-kube-apiserver-operator
+  crd:
+    - name: kubeapiservers.operator.openshift.io
+      kind: KubeAPIServer
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_20_kube-apiserver-operator_01_config.crd.yaml
+  desc: |-
+    Kubernetes API Serverの管理、アップデートを行うOperator。下記のコンポーネントからなる。
+    - Operator
+    - Bootstrap manifest renderer
+    - Installer based on static pods
+    - Configuration observer
+
+- ns: openshift-kube-apiserver
+  name: kube-apiserver-guard-HOSTNAME
+  url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
+  desc: |-
+    Rolling Update時にPDBを調整するためのPod
+
+- ns: openshift-kube-apiserver
+  name: kube-apiserver-HOSTNAME
+  url: https://github.com/openshift/kubernetes
+  crd:
+    - name: kubeapiservers.operator.openshift.io
+      kind: KubeAPIServer
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_20_kube-apiserver-operator_01_config.crd.yaml
+  desc: |-
+    kube-apiserver本体
+
+- ns: openshift-kube-controller-manager-operator
+  name: kube-controller-manager-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-kube-controller-manager-operator
+  crd:
+    - name: kubecontrollermanagers.operator.openshift.io
+      kind: KubeControllerManager
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_25_kube-controller-manager-operator_01_config.crd.yaml
+  desc: |-
+    Kubernetes Controller Managerの管理、アップデートを行うOperator。下記のコンポーネントからなる。
+    - Operator
+    - Bootstrap manifest renderer
+    - Installer based on static pods
+    - Configuration observer
+    デフォルトでは、Prometheusのメトリックスをmetricsサービス経由でプロキシーする。
+
+- ns: openshift-kube-controller-manager
+  name: kube-controller-manager-guard-HOSTNAME
+  url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
+  desc: |-
+    Rolling Update時にPDBを調整するためのPod
+
+- ns: openshift-kube-controller-manager
+  name: kube-controller-manager-HOSTNAME
+  url: https://github.com/openshift/kubernetes
+  crd:
+    - name: kubecontrollermanagers.operator.openshift.io
+      kind: KubeControllerManager
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_25_kube-controller-manager-operator_01_config.crd.yaml
+  desc: |-
+    kube-controller-manager本体
+
+- ns: openshift-kube-scheduler-operator
+  name: openshift-kube-scheduler-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-kube-scheduler-operator
+  crd:
+    - name: schedulers.config.openshift.io
+      kind: Scheduler
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_scheduler.crd.yaml
+    - name: kubeschedulers.operator.openshift.io
+      kind: KubeScheduler
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_25_kube-scheduler-operator_01_config.crd.yaml
+  desc: |-
+    Kubernetes Schedulerの管理、アップデートを行うOperator。下記のコンポーネントからなる。
+    - Operator
+    - Bootstrap manifest renderer
+    - Installer based on static pods
+    - Configuration observer
+    デフォルトでは、Prometheusのメトリックスをmetricsサービス経由でプロキシーする。
+
+- ns: openshift-kube-scheduler
+  name: openshift-kube-scheduler
+  url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
+  desc: |-
+    Rolling Update時にPDBを調整するためのPod
+
+- ns: openshift-kube-scheduler
+  name: openshift-kube-scheduler-HOSTNAME
+  url: https://github.com/openshift/kubernetes
+  crd:
+    - name: schedulers.config.openshift.io
+      kind: Scheduler
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_scheduler.crd.yaml
+    - name: kubeschedulers.operator.openshift.io
+      kind: KubeScheduler
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_25_kube-scheduler-operator_01_config.crd.yaml
+  desc: |-
+    kube-scheduler本体
+
+- ns: openshift-kube-storage-version-migrator-operator
+  name: kube-storage-version-migrator-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-kube-storage-version-migrator-operator
+  crd:
+    - name: storageversionmigrations.migration.k8s.io
+      kind: StorageVersionMigration
+      apiversion: migration.k8s.io/v1alpha1
+      url: https://github.com/kubernetes-sigs/kube-storage-version-migrator/blob/master/manifests/storage_migration_crd.yaml
+    - name: storagestates.migration.k8s.io
+      kind: StorageState
+      apiversion: migration.k8s.io/v1alpha1
+      url: https://github.com/kubernetes-sigs/kube-storage-version-migrator/blob/master/manifests/storage_state_crd.yaml
+    - name: kubestorageversionmigrators.operator.openshift.io
+      kind: KubeStorageVersionMigrator
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_40_kube-storage-version-migrator-operator_00_config.crd.yaml
+  desc: |-
+    kube-storage-version-migratorをデプロイ/管理するOperator
+
+- ns: openshift-kube-storage-version-migrator
+  name: migrator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/kubernetes-kube-storage-version-migrator
+  crd:
+    - name: storageversionmigrations.migration.k8s.io
+      kind: StorageVersionMigration
+      apiversion: migration.k8s.io/v1alpha1
+      url: https://github.com/kubernetes-sigs/kube-storage-version-migrator/blob/master/manifests/storage_migration_crd.yaml
+    - name: storagestates.migration.k8s.io
+      kind: StorageState
+      apiversion: migration.k8s.io/v1alpha1
+      url: https://github.com/kubernetes-sigs/kube-storage-version-migrator/blob/master/manifests/storage_state_crd.yaml
+  desc: |-
+    API serverがetcdに書くときは、ある「Storage Version」で保存する(Storage VersionはAPIアクセスするときのInternal Version(""xxx/v1beta""みたいなやつ)とは異なる)。
+    API serverのバージョンアップに際し、Storage Versionが上がる場合がある。
+    Storage Versionが上がった場合、以前にetcdに書き込まれたデータについても、Storage Versionを更新する必要がある。
+
+    Storage Versionの更新を検知して、更新があった場合に自動的に必要なデータのStorage Versionのマイグレーションをしてくれるのがこのmigrator。
+
+    cf. https://speakerdeck.com/uesyn/k8s-storage-version-migration
+
+- ns: openshift-machine-api
+  name: cluster-autoscaler-operator-XXXXXXXXXX-XXXXX
+  url: 
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-machine-api
+  name: cluster-baremetal-operator-XXXXXXXXXX-XXXXX
+  url: 
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-machine-api
+  name: machine-api-controllers-XXXXXXXXXX-XXXXX
+  url: 
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-machine-api
+  name: machine-api-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/machine-api-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    MAO: Machie API Operator
+    ノードのプロビジョニングを制御する、Machin APIのPod群を管理するOperator
+
+    machine-api-operator: /machine-api-operator
+    xxx
+    2
+
+- ns: openshift-machine-config-operator
+  name: machine-config-controller-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/machine-config-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-machine-config-operator
+  name: machine-config-daemon-XXXXX
+  url: https://github.com/openshift/machine-config-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    DaemonSetとして各ノードで稼動し、該当ノードのOSアップデートおよびMachine Configの設定の反映を実施する。
+
+- ns: openshift-machine-config-operator
+  name: machine-config-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/machine-config-operator
+  crd:
+    - name: 
+      kind: MachineConfig
+      apiversion: 
+      url: 
+    - name: 
+      kind: KubeletConfig
+      apiversion: 
+      url: 
+    - name: 
+      kind: ContainerRuntimeConfig
+      apiversion: 
+      url: 
+    - name: 
+      kind: MachineConfigPool
+      apiversion: 
+      url: 
+  desc: |-
+    MCO: Machine Config Operator
+
+    OSの設定をKubernetes API経由で管理するためのOperator。
+    Machine API OperatorでMachineを増設した際は、その後のOS上の設定はMachine Config Operatorが面倒を見る。
+    MCOの設定は、Ignition形式を使用する。
+    OSのアップデートはrpm-ostreeの仕組みを使用する。
+    ostreeのコンテンツは、コンテナイメージとして梱包した形で提供する。
+
+- ns: openshift-machine-config-operator
+  name: machine-config-server-XXXXX
+  url: https://github.com/openshift/machine-config-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    新規にクラスターの参加するノードに対して、Ignitionファイルを提供する。
+
+- ns: openshift-marketplace
+  name: certified-operators-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-marketplace
+  name: community-operators-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-marketplace
+  name: marketplace-operator-XXXXXXXXXX-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-marketplace
+  name: redhat-marketplace-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-marketplace
+  name: redhat-operators-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-monitoring
+  name: alertmanager-main-X
+  url: https://github.com/openshift/prometheus-alertmanager
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-monitoring
+  name: cluster-monitoring-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-monitoring-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    OpenShift上でPrometheusベースのクラスターモニタリングスタックを管理・アップデートするOperator。
+    管理対象:
+    - Prometheus Operator
+    - Prometheus
+    - Alertmanager
+    - kube-state-metrics
+    - node_exporter
+    - prometheus-adapter
+
+- ns: openshift-monitoring
+  name: kube-state-metrics-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/kube-state-metrics
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    Kubernetes API サーバをリッスンし、デプロイ、ノード、ポッドなどのオブジェクトの状態に関するメトリクスを生成するサービス
+
+- ns: openshift-monitoring
+  name: node-exporter-XXXXX
+  url: https://github.com/openshift/node_exporter
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-monitoring
+  name: openshift-state-metrics-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/openshift-state-metrics
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    kube-state-metricsの拡張、OpenShift特有のリソースのメトリックスを提供する
+
+- ns: openshift-monitoring
+  name: prometheus-adapter-XXXXXXXXXX-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    Aggregation Layer経由でMetrics関連のAPIを処理する
+    - v1beta1.metrics.k8s.io
+
+    Prometheusの任意のメトリクスをカスタム・外部メトリクスとして利用するためのAPIサーバで、HPAのカスタムメトリックスとして利用したりする
+
+- ns: openshift-monitoring
+  name: prometheus-k8s-X
+  url: https://github.com/openshift/prometheus
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-monitoring
+  name: prometheus-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/prometheus-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    Prometheusと関連コンポーネントをk8sネイティブな方法で管理、デプロイするOperator。
+    - Prometheus、Alertmanager等を管理するためのカスタムリソースを提供
+    - 基本的なPrometheusの設定を自動化
+    - モニタリングターゲットを自動的に構成
+
+- ns: openshift-monitoring
+  name: prometheus-operator-admission-webhook-XXXXXXXXXX-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-monitoring
+  name: telemeter-client-XXXXXXXXXX-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+    2
+
+- ns: openshift-monitoring
+  name: thanos-querier-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/thanos
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    Thanos管理のPrometheusストレージに対するPromQLクエリを受け付ける
+
+- ns: openshift-multus
+  name: multus-XXXXX
+  url: https://github.com/openshift/multus-cni
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    Podに複数のインターフェースを構成し、それぞれ別のネットワークに接続できるようにするCNIプラグイン。
+    確には、他の(複数の)CNIプラグインを呼び出すことができるメタプラグインとして振る舞う。
+    インターフェースごとのCNI設定は、カスタムリソース `NetworkAttachmentDefinition` で定義する。
+
+- ns: openshift-multus
+  name: multus-additional-cni-plugins-XXXXX
+  url: https://github.com/openshift/multus-cni
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    multus用の追加のCNIプラグイン
+
+- ns: openshift-multus
+  name: multus-admission-controller-XXXXX
+  url: https://github.com/openshift/multus-admission-controller
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    リソースがNetwork Plumbling Working Groupで定義したCRD定義に適合しているかをチェックするAdmission Controller。
+    具体的には、カスタムリソース `NetworkAttachmentDefinition` 作成時にフォーマットが正しいかどうかをチェックする。
+
+- ns: openshift-multus
+  name: network-metrics-daemon-XXXXX
+  url: https://github.com/openshift/network-metrics-daemon
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    ネットワーク関連のメトリックを収集し、公開するデーモン。
+    kubeletが収集しているネットワーク関連のメトリック(container_network_receive_bytes_total, container_network_transmit_packets_dropped_total等)には `interface` ラベルがついているが、multusで複数ネットワークに接続している場合、どのインターフェースがどのネットワークに接続しているかがわからない。
+    このデーモンは、インターフェース名と接続ネットワークの情報(NetworkAttachmentDefinitionが定義されたnamespace名とNetworkAttachmentDefinitionの名前)を `pod_network_name_info` ゲージメトリックとして公開する。
+    promqlでこれらの情報を組み合わせることで、インターフェースごとのメトリックを、どのネットワークに接続しているかの情報と合わせて取得することができる。
+    クエリの例はこちらを参照 https://github.com/openshift/network-metrics-daemon/blob/master/README.md#metrics-with-network-name
+
+- ns: openshift-network-diagnostics
+  name: network-check-source-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cluster-network-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    TCPのエンドポイントにアクセスできるかどうか確認する (送り側)
+
+- ns: openshift-network-diagnostics
+  name: network-check-target-XXXXX
+  url: https://github.com/openshift/cluster-network-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    TCPのエンドポイントにアクセスできるかどうか確認する (受け側)
+
+- ns: openshift-network-operator
+  name: network-operator-XXXXXXXXXX-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    CNO: Cluster Network Operator
+
+    クラスターネットワーク全体のカスタムリソースやCNIプラグインを管理するOperator。
+    インストール時の設定でnetwork.config.openshift.ioが作られ、network-operatorがそれを元にnetwork.operator.openshift.ioを生成する(つまり、Reconcileループでnetwork.configを見て、変更があったらnetwork.operatorを更新する)。
+
+    Multusで使用するカスタムリソースNetworkAttachmentDefinitionは、network.operatorのspec.additionalNetworksに定義する必要がある(network-operatorがvalidateした後にNetworkAttachmentDefinitionを生成してくれる)
+
+- ns: openshift-oauth-apiserver
+  name: apiserver-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/oauth-apiserver
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    Aggregation Layer経由でOpenShift特有のAPIを処理する
+    - v1.oauth.openshift.io
+    - v1.user.openshift.io
+
+- ns: openshift-operator-lifecycle-manager
+  name: catalog-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/operator-framework-olm
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    CatalogSourceを管理するOperator
+
+- ns: openshift-operator-lifecycle-manager
+  name: olm-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/operator-framework-olm
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    Operator Lifecycle Managerを管理するOperator
+
+- ns: openshift-operator-lifecycle-manager
+  name: package-server-manager-XXXXXXXXXX-XXXXX
+  url: http://github.com/
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    xxx
+
+- ns: openshift-operator-lifecycle-manager
+  name: packageserver-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/operator-framework-olm
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    Package API Server
+
+    Aggregation Layer経由でOperator関連のAPIを処理する
+    - v1.packages.operators.coreos.com
+
+- ns: openshift-sdn
+  name: sdn-XXXXX
+  url: https://github.com/openshift/sdn
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    全てのノードでDaemonSetとして稼動し、ClusterNetworkと自ノードのHostSubnetの情報を元に、ノード内のネットワークの設定をする。
+    - CNI plugin(/opt/cni/bin/openshift-sdn)からの要求に応じてPodをネットワークに接続する
+    - OVSブリッジをセットアップし、Pod, Service, NetworkPolicy, EgressNetworkPolicy用のOVS flowを管理する
+    - 外部への通信のためのiptablesルールを管理する
+    - Static Egress IP用のOVS flowを管理する
+    - Service用のiptablesルールを構成する (kube-proxyがビルトインされている)
+
+- ns: openshift-sdn
+  name: sdn-controller-XXXXX
+  url: https://github.com/openshift/sdn
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    masterノードでDaemonSetとして稼動し、クラスターレベルの処理を担当する。
+    - namespaceに対応したNetNamespaceオブジェクトを作成
+    - ノードごとにHostSubnetオブジェクトを作成
+    - Egress IPの冗長化の制御
+    昔はClueterNetworkも管理していたが、v4.2以降はClusterNetworkはcluster-network-operatorが管理するようになった
+
+- ns: openshift-service-ca-operator
+  name: service-ca-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/service-ca-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    service-ca controllerをデプロイするOperator (PID1は `service-ca-operator operator`)
+
+
+- ns: openshift-service-ca
+  name: service-ca-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/service-ca-operator
+  crd:
+    - name: dnses.operator.openshift.io
+      kind: DNS
+      apiversion: 
+      url: 
+  desc: |-
+    下記2つのコントローラを実行するコントローラ (PID1は `service-ca-operator controller`)
+    1. serving cert signer:
+      "service.beta.openshift.io/serving-cert-secret-name: <secret name>" annotationが付けられたサービスに対して、署名されたサービス提供証明書と秘密鍵を発行し、指定したSecretに埋め込む。
+    2. configmap cabundle injector:
+      "service.beta.openshift.io/inject-cabundle=true" annotationが付けられた ConfigMap を監視し、PEMエンコードされたCA署名バンドルを含むデータ項目（キー "service-ca.crt"）を追加または更新する。
+    3. generic cabundle injector:
+      "service.beta.openshift.io/inject-cabundle=true" annotationが付けられたapiservices, mutatingwebhookconfig, validatingwebhookconfig, crdを監視し、しかるべきフィールド(例えばapiserviceの場合はspec.caBundle)にbase64 URL encodedのCAバンドルを設定する。
+
+    https://docs.openshift.com/container-platform/latest/security/certificate_types_descriptions/service-ca-certificates.html#expiration
