@@ -16,7 +16,7 @@ def load_desc():
         desc = yaml.load(f, Loader=yaml.FullLoader)
     for item in desc['descriptions']:
         print('** item={}'.format(item))
-        desc_hash[(item['ns'], item['name'])] = {'desc':item.get('desc', ''), 'url':item.get('url', '')}
+        desc_hash[(item['ns'], item['name'])] = {'desc':item.get('desc', ''), 'url':item.get('url', ''), 'crd':item.get('crd', ''), 'condition':item.get('condition', '')}
     return desc_hash
 
 def load_nodes():
@@ -144,8 +144,38 @@ def make_container_cells(current_row, ctr, is_init_container):
     xls_input_cell_by_key(sheet, current_row, 'container_resources', dict2yaml(ctr.get('resources', '')))
     xls_input_cell_by_key(sheet, current_row, 'container_securityContext', dict2yaml(ctr.get('securityContext', '')))
 
+def get_desc_info(ns, pod_name, key):
+    desc = desc_hash.get((ns, pod_name), None)
+    if desc:
+        return desc.get(key, '')
+    return ''
+
+def build_crd_str(ns, pod_name):
+    all_crd_str = ''
+    crds = get_desc_info(ns, pod_name, 'crd')
+    # print('  => !!! crds={}'.format(crds))
+    for crd in crds:
+        kind = crd.get('kind')
+        apiversion = crd.get('apiversion')
+
+        if kind == None or kind == '':
+            continue
+        if apiversion == None or apiversion == '':
+            apiversion = None
+        else:
+            apiversion = '(' + apiversion + ')'
+        crd_str = kind + (' ' + apiversion) if apiversion else ''
+
+        if all_crd_str == '':
+            all_crd_str = crd_str
+        else:
+            all_crd_str = all_crd_str + ',\n' + crd_str
+    # print('  => !!! all_crd_str={}'.format(all_crd_str))
+    return all_crd_str
+
+
 def set_cell_hyperlink(cell, url):
-    if url == '':
+    if url == None or url == '':
         return
 
     parse_result = urlparse(url)
@@ -198,6 +228,8 @@ header_labels = [
     'pod_name',
     'description',
     'url',
+    'custom_resources',
+    'condition',
     'num_of_pods',
     'owner_kind',
     'owner_name',
@@ -265,12 +297,17 @@ for item in json_data['items']:
         pod_exists[(md['namespace'], pod_name)] = True
         xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
 
-        xls_input_cell_by_key(sheet, current_row, 'description', desc_hash[(md['namespace'], pod_name)]['desc'])
+        xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
 
-        xls_input_cell_by_key(sheet, current_row, 'url', desc_hash[(md['namespace'], pod_name)]['url'])
+        xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
-        set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), desc_hash[(md['namespace'], pod_name)]['url'])
+        set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
+
+        xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
+
+        xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
+        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
 
         xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
         xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
@@ -292,12 +329,17 @@ for item in json_data['items']:
         pod_exists[(md['namespace'], pod_name)] = True
         xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
 
-        xls_input_cell_by_key(sheet, current_row, 'description', desc_hash[(md['namespace'], pod_name)]['desc'])
+        xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
 
-        xls_input_cell_by_key(sheet, current_row, 'url', desc_hash[(md['namespace'], pod_name)]['url'])
+        xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
-        set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), desc_hash[(md['namespace'], pod_name)]['url'])
+        set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
+
+        xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
+
+        xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
+        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
 
     print('  affinity:{}'.format(spec.get('affinity', '')))
     xls_input_cell_by_key(sheet, current_row, 'affinity', dict2yaml(spec.get('affinity', '')))
@@ -387,6 +429,10 @@ for col in sheet.columns:
     if col[0].value == 'description':
         target_width = 60
     elif col[0].value == 'url':
+        target_width = 30
+    elif col[0].value == 'custom_resources':
+        target_width = 30
+    elif col[0].value == 'condition':
         target_width = 30
     elif col[0].value == 'affinity':
         target_width = 30
