@@ -820,26 +820,30 @@ descriptions:
 
 - ns: openshift-machine-api
   name: cluster-autoscaler-operator-XXXXXXXXXX-XXXXX
-  url: 
+  url: https://github.com/openshift/cluster-autoscaler-operator
   condition: OCP inbox
   crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
+    - name: clusterautoscalers.autoscaling.openshift.io
+      kind: ClusterAutoscaler
+      apiversion: autoscaling.openshift.io/v1
+      url: https://github.com/openshift/cluster-autoscaler-operator/blob/master/install/01_clusterautoscaler.crd.yaml
+    - name: machineautoscalers.autoscaling.openshift.io
+      kind: MachineAutoscaler
+      apiversion: autoscaling.openshift.io/v1
+      url: https://github.com/openshift/cluster-autoscaler-operator/blob/master/install/02_machineautoscaler.crd.yaml
   desc: |-
     xxx
     2
 
 - ns: openshift-machine-api
   name: cluster-baremetal-operator-XXXXXXXXXX-XXXXX
-  url: 
+  url: https://github.com/openshift/cluster-baremetal-operator
   condition: OCP inbox
   crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
+    - name: provisionings.metal3.io
+      kind: Provisioning
+      apiversion: metal3.io/v1alpha1
+      url: https://github.com/openshift/cluster-baremetal-operator/blob/master/manifests/0000_31_cluster-baremetal-operator_02_metal3provisioning.crd.yaml
   desc: |-
     xxx
     2
@@ -862,27 +866,28 @@ descriptions:
   url: https://github.com/openshift/machine-api-operator
   condition: OCP inbox
   crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
+    - name: machines.machine.openshift.io
+      kind: Machine
+      apiversion: machine.openshift.io/v1beta1
+      url: https://github.com/openshift/machine-api-operator/blob/master/install/0000_30_machine-api-operator_02_machine.crd.yaml
+    - name: machinesets.machine.openshift.io
+      kind: MachineSet
+      apiversion: machine.openshift.io/v1beta1
+      url: https://github.com/openshift/machine-api-operator/blob/master/install/0000_30_machine-api-operator_03_machineset.crd.yaml
+    - name: machinehealthchecks.machine.openshift.io
+      kind: MachineHealthCheck
+      apiversion: machine.openshift.io/v1beta1
+      url: https://github.com/openshift/machine-api-operator/blob/master/install/0000_30_machine-api-operator_07_machinehealthcheck.crd.yaml
   desc: |-
     MAO: Machie API Operator
     ノードのプロビジョニングを制御する、Machin APIのPod群を管理するOperator
 
     machine-api-operator: /machine-api-operator
-    xxx
-    2
 
 - ns: openshift-machine-config-operator
   name: machine-config-controller-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/machine-config-operator
   condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
   desc: |-
     xxx
     2
@@ -891,11 +896,6 @@ descriptions:
   name: machine-config-daemon-XXXXX
   url: https://github.com/openshift/machine-config-operator
   condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
   desc: |-
     DaemonSetとして各ノードで稼動し、該当ノードのOSアップデートおよびMachine Configの設定の反映を実施する。
 
@@ -904,22 +904,22 @@ descriptions:
   url: https://github.com/openshift/machine-config-operator
   condition: OCP inbox
   crd:
-    - name: 
+    - name: machineconfigs.machineconfiguration.openshift.io
       kind: MachineConfig
-      apiversion: 
-      url: 
-    - name: 
-      kind: KubeletConfig
-      apiversion: 
-      url: 
-    - name: 
-      kind: ContainerRuntimeConfig
-      apiversion: 
-      url: 
-    - name: 
+      apiversion: machineconfiguration.openshift.io/v1
+      url: https://github.com/openshift/machine-config-operator/blob/master/install/0000_80_machine-config-operator_01_machineconfig.crd.yaml
+    - name: machineconfigpools.machineconfiguration.openshift.io
       kind: MachineConfigPool
-      apiversion: 
-      url: 
+      apiversion: machineconfiguration.openshift.io/v1
+      url: https://github.com/openshift/machine-config-operator/blob/master/install/0000_80_machine-config-operator_01_machineconfigpool.crd.yaml
+    - name: kubeletconfigs.machineconfiguration.openshift.io
+      kind: KubeletConfig
+      apiversion: machineconfiguration.openshift.io/v1
+      url: https://github.com/openshift/machine-config-operator/blob/master/install/0000_80_machine-config-operator_01_kubeletconfig.crd.yaml
+    - name: containerruntimeconfigs.machineconfiguration.openshift.io
+      kind: ContainerRuntimeConfig
+      apiversion: machineconfiguration.openshift.io/v1
+      url: https://github.com/openshift/machine-config-operator/blob/master/install/0000_80_machine-config-operator_01_containerruntimeconfig.crd.yaml
   desc: |-
     MCO: Machine Config Operator
 
@@ -933,78 +933,50 @@ descriptions:
   name: machine-config-server-XXXXX
   url: https://github.com/openshift/machine-config-operator
   condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
   desc: |-
     新規にクラスターの参加するノードに対して、Ignitionファイルを提供する。
 
 - ns: openshift-marketplace
   name: certified-operators-XXXXX
-  url: http://github.com/
+  url: https://github.com/openshift/operator-framework-olm
   condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
   desc: |-
-    xxx
-    2
+    ISVによってサポートが提供されるOperator
 
 - ns: openshift-marketplace
   name: community-operators-XXXXX
-  url: http://github.com/
+  url: https://github.com/openshift/operator-framework-olm
   condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
   desc: |-
-    xxx
-    2
+    コミュニティで管理されている、OpenShift/OKD用のOperator Catalog (Registry Server)。サポートはない。
+    https://github.com/redhat-openshift-ecosystem/community-operators-prod
 
 - ns: openshift-marketplace
   name: marketplace-operator-XXXXXXXXXX-XXXXX
-  url: http://github.com/
+  url: https://github.com/operator-framework/operator-marketplace
   condition: OCP inbox
   crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
+    - name: operatorhubs.config.openshift.io
+      kind: OperatorHub
+      apiversion: config.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/config/v1/0000_03_marketplace-operator_01_operatorhub.crd.yaml
   desc: |-
-    xxx
-    2
+    クラスター外のOperatorをインストールするためのパイプ役となるOperator
 
 - ns: openshift-marketplace
   name: redhat-marketplace-XXXXX
-  url: http://github.com/
+  url: https://github.com/openshift/operator-framework-olm
   condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
   desc: |-
-    xxx
-    2
+    Red Hat Marketplaceから購入できる認定ソフトウェアを提供するOperator catalog
 
 - ns: openshift-marketplace
   name: redhat-operators-XXXXX
-  url: http://github.com/
+  url: https://github.com/openshift/operator-framework-olm
   condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
   desc: |-
-    xxx
-    2
+    Red Hat製品のOperator catalogを提供する。
+    Red Hatからのサポートあり。
 
 - ns: openshift-monitoring
   name: alertmanager-main-X
@@ -1016,18 +988,21 @@ descriptions:
       apiversion: 
       url: 
   desc: |-
-    xxx
-    2
+    Prometheusからアラートを受け取り、外部の通知システムに送信する。
 
 - ns: openshift-monitoring
   name: cluster-monitoring-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-monitoring-operator
   condition: OCP inbox
   crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
+    - name: alertingrules.monitoring.openshift.io
+      kind: AlertingRule
+      apiversion: monitoring.openshift.io/v1alpha1
+      url: https://github.com/openshift/api/blob/release-4.11/monitoring/v1alpha1/0000_50_monitoring_01_alertingrules.crd.yaml
+    - name: alertrelabelconfigs.monitoring.openshift.io
+      kind: AlertRelabelConfig
+      apiversion: monitoring.openshift.io/v1alpha1
+      url: https://github.com/openshift/api/blob/release-4.11/monitoring/v1alpha1/0000_50_monitoring_02_alertrelabelconfigs.crd.yaml
   desc: |-
     OpenShift上でPrometheusベースのクラスターモニタリングスタックを管理・アップデートするOperator。
     管理対象:
@@ -1048,7 +1023,7 @@ descriptions:
       apiversion: 
       url: 
   desc: |-
-    Kubernetes API サーバをリッスンし、デプロイ、ノード、ポッドなどのオブジェクトの状態に関するメトリクスを生成するサービス
+    Kubernetes API サーバをlistenし、Deployment、Podなどのオブジェクトの状態に関するメトリクスを生成する。
 
 - ns: openshift-monitoring
   name: node-exporter-XXXXX
@@ -1067,22 +1042,22 @@ descriptions:
       apiversion: quota.openshift.io/v1
       url: https://github.com/openshift/api/blob/master/quota/v1/0000_03_quota-openshift_01_clusterresourcequota.crd.yaml
   desc: |-
-    kube-state-metricsの拡張、OpenShift特有のリソースのメトリックスを提供する
+    DeploymentConfigやRouteなど、OpenShift特有のリソースのメトリックスを提供する
 
 - ns: openshift-monitoring
   name: prometheus-adapter-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/k8s-prometheus-adapter
   condition: OCP inbox
   desc: |-
-    Prometheus環境において、Kubernetes Metrics Serverの代わりとして使用する。
-    Prometheusの任意のメトリクスをカスタム・外部メトリクスとして利用するためのAPIサーバで、HPAのカスタムメトリックスとして利用したりする。
+    Prometheusの任意のメトリクスをカスタム・外部メトリクスとして利用するためのAPIサーバ。
+    Horizontal Pod Autoscalingやoc adm top {pods,nodes}で使用するためのクラスターリソースのメトリックスを提供する。
 
 - ns: openshift-monitoring
   name: prometheus-k8s-X
   url: https://github.com/openshift/prometheus
   condition: OCP inbox
   desc: |-
-    Prometheus モニタリングサーバーの本体
+    Prometheus モニタリングサーバーの本体。時系列データベースと、メトリックスルールの評価エンジンからなる。
 
 - ns: openshift-monitoring
   name: prometheus-operator-XXXXXXXXXX-XXXXX
@@ -1152,7 +1127,7 @@ descriptions:
   url: https://github.com/openshift/thanos
   condition: OCP inbox
   desc: |-
-    Thanos管理のPrometheusストレージに対するPromQLクエリを受け付ける
+    OpenShiftのコアメトリックスとユーザー定義プロジェクトのメトリックスを集約および重複排除する
 
 - ns: openshift-multus
   name: multus-XXXXX
@@ -1168,7 +1143,7 @@ descriptions:
   url: https://github.com/openshift/multus-cni
   condition: OCP inbox
   desc: |-
-    multus用の追加のCNIプラグイン
+    multus用の追加のCNIプラグインをインストールする
 
 - ns: openshift-multus
   name: multus-admission-controller-XXXXX
@@ -1318,29 +1293,55 @@ descriptions:
   name: catalog-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/operator-framework-olm
   condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
   desc: |-
-    CatalogSourceを管理するOperator
+    - Operatorの依存関係を解決し、必要なものをインストールする
+    - Operator Bundle (Operatorのメタデータ、Operatorが管理するCRD、Operatorが必要とするSA, Role, Deployment等のリソースを記載したCSV (ClusterServiceVersion) 等をまとめたもの)をpullして展開する
+    - 必要なリソースをインストールする
 
 - ns: openshift-operator-lifecycle-manager
   name: olm-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/operator-framework-olm
   condition: OCP inbox
   crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
+    - name: catalogsources.operators.coreos.com
+      kind: CatalogSource
+      apiversion: operators.coreos.com/v1alpha1
+      url: https://github.com/openshift/operator-framework-olm/blob/master/manifests/0000_50_olm_00-catalogsources.crd.yaml
+    - name: clusterserviceversions.operators.coreos.com
+      kind: ClusterServiceVersion
+      apiversion: operators.coreos.com/v1alpha1
+      url: https://github.com/openshift/operator-framework-olm/blob/master/manifests/0000_50_olm_00-clusterserviceversions.crd.yaml
+    - name: installplans.operators.coreos.com
+      kind: InstallPlan
+      apiversion: operators.coreos.com/v1alpha1
+      url: https://github.com/openshift/operator-framework-olm/blob/master/manifests/0000_50_olm_00-installplans.crd.yaml
+    - name: olmconfigs.operators.coreos.com
+      kind: OLMConfig
+      apiversion: operators.coreos.com/v1alpha1 
+      url: https://github.com/openshift/operator-framework-olm/blob/master/manifests/0000_50_olm_00-olmconfigs.crd.yaml
+    - name: operatorconditions.operators.coreos.com
+      kind: OperatorCondition
+      apiversion: operators.coreos.com/v1alpha1 
+      url: https://github.com/openshift/operator-framework-olm/blob/master/manifests/0000_50_olm_00-operatorconditions.crd.yaml
+    - name: operatorgroups.operators.coreos.com
+      kind: OperatorGroup
+      apiversion: operators.coreos.com/v1alpha1 
+      url: https://github.com/openshift/operator-framework-olm/blob/master/manifests/0000_50_olm_00-operatorgroups.crd.yaml
+    - name: operators.operators.coreos.com
+      kind: Operator
+      apiversion: operators.coreos.com/v1alpha1 
+      url: https://github.com/openshift/operator-framework-olm/blob/master/manifests/0000_50_olm_00-operators.crd.yaml
+    - name: subscriptions.operators.coreos.com
+      kind: Subscription
+      apiversion: operators.coreos.com/v1alpha1 
+      url: https://github.com/openshift/operator-framework-olm/blob/master/manifests/0000_50_olm_00-subscriptions.crd.yaml
   desc: |-
-    Operator Lifecycle Managerを管理するOperator
+    Operatorのインストール、アップデート、依存関係を管理するOperator。
+    ターゲットNamespace内のCRDを監視し、 CSV (ClusterServiceVersion) で指定されたリソース要件が満たされていることを確認し、CSV(+Install Plan)にしたがって、Operatorをデプロイする
 
 - ns: openshift-operator-lifecycle-manager
   name: package-server-manager-XXXXXXXXXX-XXXXX
-  url: http://github.com/
+  url:  https://github.com/openshift/operator-framework-olm
   condition: OCP inbox
   crd:
     - name: dnses.operator.openshift.io
@@ -1348,7 +1349,7 @@ descriptions:
       apiversion: 
       url: 
   desc: |-
-    xxx
+    packageserverのCSVを管理するカスタムコントローラ
 
 - ns: openshift-operator-lifecycle-manager
   name: packageserver-XXXXXXXXXX-XXXXX
@@ -1515,5 +1516,5 @@ descriptions:
   url: https://github.com/openshift/thanos
   condition: "Set `enableUserWorkload: true` in `cluster-monitoring-config` ConfigMap in openshift-monitoring namespace."
   desc: |-
-    ユーザー定義プロジェクトのモニタリングにおける、ルール/アラート判定エンジン
+    ユーザー定義プロジェクトの用のルール/アラート判定エンジン
 
