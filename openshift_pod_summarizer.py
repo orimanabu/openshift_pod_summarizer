@@ -280,66 +280,105 @@ for item in json_data['items']:
     if status['phase'] != 'Running':
         continue
 
+###
+    refs = md.get('ownerReferences')
+    # rename 'pod_name' column
+    pod_name = normalize_pod_name(md['name'], refs[0]['kind'] if refs else '', spec['nodeName'])
+
+    if pod_exists.get((md['namespace'], pod_name)):
+        print('  => SKIP')
+        continue
+    pod_exists[(md['namespace'], pod_name)] = True
+
     print('* ns:{}, pod_name:{}, phase:{}'.format(md['namespace'], md['name'], status['phase']))
     xls_input_cell_by_key(sheet, current_row, 'ns', md['namespace'])
-    xls_input_cell_by_key(sheet, current_row, 'pod_name', md['name'])
+    xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
 
-    refs = md.get('ownerReferences')
+    xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
+    set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
+
+    xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
+    set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
+    set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
+
+    xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
+
+    xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
+    set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
+
     if refs:
         ref = refs[0]
-        print('  owner_kind:{}, owner_name:{}'.format(ref['kind'], ref['name']))
-
-        # rename 'pod_name' column
-        pod_name = normalize_pod_name(md['name'], ref['kind'], spec['nodeName'])
-        if pod_exists.get((md['namespace'], pod_name)):
-            print('  => SKIP')
-            continue
-        pod_exists[(md['namespace'], pod_name)] = True
-        xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
-
-        xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
-        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
-
-        xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
-        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
-        set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
-
-        xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
-
-        xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
-        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
-
-        xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
-        xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
-
-        # 'number of pods' column
-        xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], md['namespace']))
-
         if len(refs) > 1:
             print('!! more than one ownerReferences !!')
             sys.exit(1)
 
-    else:
-        pod_name = normalize_pod_name(md['name'], '', spec['nodeName'])
-        # key = ns_pod_key(md['namespace'], pod_name)
-        print('  => !!! ns={}, name={}, pod_name={}'.format(md['namespace'], md['name'], pod_name))
-        if pod_exists.get((md['namespace'], pod_name)):
-            print('  => SKIP')
-            continue
-        pod_exists[(md['namespace'], pod_name)] = True
-        xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
+        # 'number of pods' column
+        xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], md['namespace']))
+        xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
+        xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
 
-        xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
-        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
-
-        xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
-        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
-        set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
-
-        xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
-
-        xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
-        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
+# ###
+#     print('* ns:{}, pod_name:{}, phase:{}'.format(md['namespace'], md['name'], status['phase']))
+#     xls_input_cell_by_key(sheet, current_row, 'ns', md['namespace'])
+#     xls_input_cell_by_key(sheet, current_row, 'pod_name', md['name'])
+# 
+#     refs = md.get('ownerReferences')
+#     if refs:
+#         ref = refs[0]
+#         print('  owner_kind:{}, owner_name:{}'.format(ref['kind'], ref['name']))
+# 
+#         # rename 'pod_name' column
+#         pod_name = normalize_pod_name(md['name'], ref['kind'], spec['nodeName'])
+#         if pod_exists.get((md['namespace'], pod_name)):
+#             print('  => SKIP')
+#             continue
+#         pod_exists[(md['namespace'], pod_name)] = True
+#         xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
+#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
+#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
+#         set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
+#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
+#         xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
+# 
+#         # 'number of pods' column
+#         xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], md['namespace']))
+# 
+#         if len(refs) > 1:
+#             print('!! more than one ownerReferences !!')
+#             sys.exit(1)
+# 
+#     else:
+#         pod_name = normalize_pod_name(md['name'], '', spec['nodeName'])
+#         # key = ns_pod_key(md['namespace'], pod_name)
+#         print('  => !!! ns={}, name={}, pod_name={}'.format(md['namespace'], md['name'], pod_name))
+#         if pod_exists.get((md['namespace'], pod_name)):
+#             print('  => SKIP')
+#             continue
+#         pod_exists[(md['namespace'], pod_name)] = True
+#         xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
+#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
+#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
+#         set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
+# 
+#         xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
+#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
+# ###
 
     print('  affinity:{}'.format(spec.get('affinity', '')))
     xls_input_cell_by_key(sheet, current_row, 'affinity', dict2yaml(spec.get('affinity', '')))
