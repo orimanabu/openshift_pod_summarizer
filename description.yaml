@@ -1,7 +1,7 @@
 #- ns: 
 #  name: 
 #  url: 
-#  condition: OCP inbox
+#  install: OCP inbox
 #  crd:
 #    - name: 
 #      kind: 
@@ -17,7 +17,7 @@ descriptions:
 - ns: openshift-apiserver-operator
   name: openshift-apiserver-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-openshift-apiserver-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: apiservers.config.openshift.io
       kind: APIServer
@@ -33,7 +33,7 @@ descriptions:
 - ns: openshift-apiserver
   name: apiserver-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/openshift-apiserver
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: apiservers.config.openshift.io
       kind: APIServer
@@ -58,7 +58,7 @@ descriptions:
 - ns: openshift-authentication-operator
   name: authentication-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-authentication-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: rolebindingrestrictions.authorization.openshift.io
       kind: RoleBindingRestriction
@@ -82,7 +82,7 @@ descriptions:
 - ns: openshift-authentication
   name: oauth-openshift-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/oauth-server
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: oauths.config.openshift.io
       kind: OAuth
@@ -94,7 +94,7 @@ descriptions:
 - ns: openshift-cloud-controller-manager-operator
   name: cluster-cloud-controller-manager-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-cloud-controller-manager-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: openshiftcontrollermanagers.operator.openshift.io
       kind: OpenShiftControllerManager
@@ -108,7 +108,7 @@ descriptions:
 - ns: openshift-cloud-credential-operator
   name: cloud-credential-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cloud-credential-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: credentialsrequests.cloudcredential.openshift.io
       kind: CredentialsRequest
@@ -127,7 +127,7 @@ descriptions:
 - ns: openshift-cloud-credential-operator
   name: pod-identity-webhook-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/aws-pod-identity-webhook
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     AWSのIAMアクセスが必要なPodのためのMutating Webhook。
     AWSアクセスするPod用にIAM roleを作成し、PodのService Accountがそのroleを使用するようにtrust policyを変更する
@@ -135,7 +135,7 @@ descriptions:
 - ns: openshift-cloud-network-config-controller
   name: cloud-network-config-controller-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cloud-network-config-controller
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: cloudprivateipconfigs.cloud.network.openshift.io
       kind: CloudPrivateIPConfig
@@ -150,21 +150,21 @@ descriptions:
 - ns: openshift-cluster-csi-drivers
   name: aws-ebs-csi-driver-controller-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/aws-ebs-csi-driver
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     AWS EBS用のCSIドライバのController Plugin
 
 - ns: openshift-cluster-csi-drivers
   name: aws-ebs-csi-driver-node-XXXXX
   url: https://github.com/openshift/aws-ebs-csi-driver
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     AWS EBS用のCSIドライバのNode Plugin
 
 - ns: openshift-cluster-csi-drivers
   name: aws-ebs-csi-driver-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/aws-ebs-csi-driver-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     AWS EBS CSI driverをデプロイするOperator (https://github.com/openshift/aws-ebs-csi-driver)。
     このOperatorは、cluster-storage-operatorからインストールされる。
@@ -172,14 +172,14 @@ descriptions:
 - ns: openshift-cluster-machine-approver
   name: machine-approver-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-machine-approver
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Kubeletのクライアント証明書、サーバー証明書のCSRを承認/拒否するOperator
 
 - ns: openshift-cluster-node-tuning-operator
   name: cluster-node-tuning-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-node-tuning-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: tuneds.tuned.openshift.io
       kind: Tuned
@@ -202,7 +202,7 @@ descriptions:
 - ns: openshift-cluster-node-tuning-operator
   name: tuned-XXXXX
   url: https://github.com/openshift/cluster-node-tuning-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: tuneds.tuned.openshift.io
       kind: Tuned
@@ -222,7 +222,7 @@ descriptions:
 - ns: openshift-cluster-samples-operator
   name: cluster-samples-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-samples-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: configs.samples.operator.openshift.io
       kind: Config
@@ -234,7 +234,7 @@ descriptions:
 - ns: openshift-cluster-storage-operator
   name: cluster-storage-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-storage-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: storages.operator.openshift.io
       kind: Storage
@@ -248,7 +248,7 @@ descriptions:
 - ns: openshift-cluster-storage-operator
   name: csi-snapshot-controller-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/csi-external-snapshotter
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     カスタムリソースVolumeSnapshot, VolumeSnapshotContentをwatchし、CSI Volume Snapshotのライフサイクルを管理するコントローラ。
     Node Pluginのexternal-snapshotterと連携してCSIボリュームを制御する。
@@ -256,7 +256,7 @@ descriptions:
 - ns: openshift-cluster-storage-operator
   name: csi-snapshot-controller-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-csi-snapshot-controller-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: csisnapshotcontrollers.operator.openshift.io
       kind: CSISnapshotController
@@ -268,14 +268,14 @@ descriptions:
 - ns: openshift-cluster-storage-operator
   name: csi-snapshot-webhook-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/csi-external-snapshotter
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     カスタムリソースVolumeSnapshot, VolumeSnapshotContentのvalidationを行うAdmission Webhook
 
 - ns: openshift-cluster-version
   name: cluster-version-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-version-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: clusteroperators.config.openshift.io
       kind: ClusterOperator
@@ -294,7 +294,7 @@ descriptions:
 - ns: openshift-config-operator
   name: openshift-config-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-config-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: configs.operator.openshift.io
       kind: Config
@@ -374,7 +374,7 @@ descriptions:
 - ns: openshift-console-operator
   name: console-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/console-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: consoles.config.openshift.io
       kind: Console
@@ -384,7 +384,7 @@ descriptions:
 - ns: openshift-console
   name: console-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/console
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: consoles.config.openshift.io
       kind: Console
@@ -429,7 +429,7 @@ descriptions:
 - ns: openshift-console
   name: downloads-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/console-operator/blob/release-4.11/bindata/deployments/downloads-deployment.yaml
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     下記arch/os用のocコマンドのバイナリをhttpで配布するPod
     - linux_amd64
@@ -444,7 +444,7 @@ descriptions:
 - ns: openshift-controller-manager-operator
   name: openshift-controller-manager-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-openshift-controller-manager-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: openshiftcontrollermanagers.operator.openshift.io
       kind: OpenShiftControllerManager
@@ -456,7 +456,7 @@ descriptions:
 - ns: openshift-controller-manager
   name: controller-manager-XXXXX
   url: https://github.com/openshift/openshift-controller-manager
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: openshiftcontrollermanagers.operator.openshift.io
       kind: OpenShiftControllerManager
@@ -474,7 +474,7 @@ descriptions:
 - ns: openshift-dns-operator
   name: dns-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-dns-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: dnses.operator.openshift.io
       kind: DNS
@@ -500,21 +500,21 @@ descriptions:
 - ns: openshift-dns
   name: dns-default-XXXXX
   url: https://github.com/openshift/coredns
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     OpenShiftの内部DNS (CoreDNS)
 
 - ns: openshift-dns
   name: node-resolver-XXXXX
   url: https://github.com/openshift/cluster-dns-operator/blob/master/assets/node-resolver/update-node-resolver.sh
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     各ノードの/etc/hostsを管理する (内部コンテナレジストリのcluster.localの情報を/etc/hostsに追記する)
 
 - ns: openshift-etcd-operator
   name: etcd-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-etcd-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: etcds.operator.openshift.io
       kind: Etcd
@@ -529,7 +529,7 @@ descriptions:
 - ns: openshift-etcd
   name: etcd-guard-HOSTNAME
   url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     ノードdrain時にetcdのquorumを保つための仕組み。例えばmasterノードを順に再起動するような場合に、etcdが起動する前に次のノードの再起動が行われないようにする。
 
@@ -541,14 +541,14 @@ descriptions:
 - ns: openshift-etcd
   name: etcd-HOSTNAME
   url: https://github.com/openshift/etcd
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     etcd本体
 
 - ns: openshift-image-registry
   name: cluster-image-registry-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-image-registry-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: imagecontentpolicies.config.openshift.io
       kind: ImageContentPolicy
@@ -571,13 +571,13 @@ descriptions:
       apiversion: operator.openshift.io/v1alpha1
       url: https://github.com/openshift/api/blob/master/operator/v1alpha1/0000_10_config-operator_01_imagecontentsourcepolicy.crd.yaml
   desc: |-
-    必要なPVの作成含め、内部イメージレジストリの設定を管理するOperator。
+    必要なPVの作成等、内部イメージレジストリの設定を管理するOperator。
     クラスターの初期構築時、クラスターの構成情報(特にストレージ)を見て内部イメージレジストリのリソースを作成する。
 
 - ns: openshift-image-registry
   name: image-registry-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/image-registry
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: imagecontentpolicies.config.openshift.io
       kind: ImageContentPolicy
@@ -601,24 +601,24 @@ descriptions:
 - ns: openshift-image-registry
   name: node-ca-XXXXX
   url: https://github.com/openshift/cluster-image-registry-operator/blob/master/bindata/nodecadaemon.yaml
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     各ノードの/etc/docker/certs.dのファイルを更新する
 
 - ns: openshift-ingress-canary
   name: ingress-canary-XXXXX
   url: https://github.com/openshift/cluster-ingress-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     ingress-canaryは、HTTP, HTTP/2, gRPC用のechoサーバ(実体は `ingress-operator serve-healthchek`) が稼動するPod。
-    ingress-operatorからcanary Podに対して定期的にRouter経由でアクセスし、Routeの稼動確認を行っている。
+    ingress-operatorからcanary Podに対して定期的にRouter経由でアクセスすることで、Routeの稼動確認を行っている。
 
     https://github.com/openshift/enhancements/blob/master/enhancements/ingress/ingress-fault-detection.md
 
 - ns: openshift-ingress-operator
   name: ingress-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-ingress-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: ingresses.config.openshift.io
       kind: Ingress
@@ -634,7 +634,7 @@ descriptions:
 - ns: openshift-ingress
   name: router-default-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/router
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: routes.route.openshift.io
       kind: Route
@@ -647,7 +647,7 @@ descriptions:
 - ns: openshift-insights
   name: insights-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/insights-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     匿名化されたシステム設定情報の収集と、Red Hat Insights へのレポートを行う。
     収集されたデータは、クラスタの問題や予期しないエラーのデバッグに利用される。
@@ -657,7 +657,7 @@ descriptions:
 - ns: openshift-kube-apiserver-operator
   name: kube-apiserver-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-kube-apiserver-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: kubeapiservers.operator.openshift.io
       kind: KubeAPIServer
@@ -673,14 +673,14 @@ descriptions:
 - ns: openshift-kube-apiserver
   name: kube-apiserver-guard-HOSTNAME
   url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Rolling Update時にPDBを調整するためのPod
 
 - ns: openshift-kube-apiserver
   name: kube-apiserver-HOSTNAME
   url: https://github.com/openshift/kubernetes
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: kubeapiservers.operator.openshift.io
       kind: KubeAPIServer
@@ -692,7 +692,7 @@ descriptions:
 - ns: openshift-kube-controller-manager-operator
   name: kube-controller-manager-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-kube-controller-manager-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: kubecontrollermanagers.operator.openshift.io
       kind: KubeControllerManager
@@ -709,14 +709,14 @@ descriptions:
 - ns: openshift-kube-controller-manager
   name: kube-controller-manager-guard-HOSTNAME
   url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Rolling Update時にPDBを調整するためのPod
 
 - ns: openshift-kube-controller-manager
   name: kube-controller-manager-HOSTNAME
   url: https://github.com/openshift/kubernetes
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: kubecontrollermanagers.operator.openshift.io
       kind: KubeControllerManager
@@ -728,7 +728,7 @@ descriptions:
 - ns: openshift-kube-scheduler-operator
   name: openshift-kube-scheduler-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-kube-scheduler-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: schedulers.config.openshift.io
       kind: Scheduler
@@ -749,21 +749,21 @@ descriptions:
 - ns: openshift-kube-scheduler
   name: openshift-kube-scheduler-guard-HOSTNAME
   url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Rolling Update時にPDBを調整するためのPod
 
 - ns: openshift-kube-scheduler
   name: openshift-kube-scheduler
   url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Rolling Update時にPDBを調整するためのPod
 
 - ns: openshift-kube-scheduler
   name: openshift-kube-scheduler-HOSTNAME
   url: https://github.com/openshift/kubernetes
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: schedulers.config.openshift.io
       kind: Scheduler
@@ -779,7 +779,7 @@ descriptions:
 - ns: openshift-kube-storage-version-migrator-operator
   name: kube-storage-version-migrator-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-kube-storage-version-migrator-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: storageversionmigrations.migration.k8s.io
       kind: StorageVersionMigration
@@ -799,7 +799,7 @@ descriptions:
 - ns: openshift-kube-storage-version-migrator
   name: migrator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/kubernetes-kube-storage-version-migrator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: storageversionmigrations.migration.k8s.io
       kind: StorageVersionMigration
@@ -810,7 +810,7 @@ descriptions:
       apiversion: migration.k8s.io/v1alpha1
       url: https://github.com/kubernetes-sigs/kube-storage-version-migrator/blob/master/manifests/storage_state_crd.yaml
   desc: |-
-    API serverがetcdに書くときは、ある「Storage Version」で保存する(Storage VersionはAPIアクセスするときのInternal Version(""xxx/v1beta""みたいなやつ)とは異なる)。
+    API serverがetcdに情報を書くときは、ある「Storage Version」で保存する(Storage Versionはetcd上のデータのバージョンで、APIアクセスするときのInternal Version("xxx/v1beta1"みたいなやつ)とは異なる)。
     API serverのバージョンアップに際し、Storage Versionが上がる場合がある。
     Storage Versionが上がった場合、以前にetcdに書き込まれたデータについても、Storage Versionを更新する必要がある。
 
@@ -821,7 +821,7 @@ descriptions:
 - ns: openshift-machine-api
   name: cluster-autoscaler-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-autoscaler-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: clusterautoscalers.autoscaling.openshift.io
       kind: ClusterAutoscaler
@@ -832,39 +832,46 @@ descriptions:
       apiversion: autoscaling.openshift.io/v1
       url: https://github.com/openshift/cluster-autoscaler-operator/blob/master/install/02_machineautoscaler.crd.yaml
   desc: |-
-    xxx
-    2
+    CAO: Cluster Autoscaler Operator
+
+    MachineSet単位で上限を決めてオートスケールする仕組みを提供するOperator
 
 - ns: openshift-machine-api
   name: cluster-baremetal-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-baremetal-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: provisionings.metal3.io
       kind: Provisioning
       apiversion: metal3.io/v1alpha1
       url: https://github.com/openshift/cluster-baremetal-operator/blob/master/manifests/0000_31_cluster-baremetal-operator_02_metal3provisioning.crd.yaml
   desc: |-
-    xxx
-    2
+    CBO: Cluster Baremetal Operator
+
+    ベアメタルサーバーをMachine APIで管理するためのコンポーネント。Metal3プロジェクトの利用している。
+    https://github.com/openshift/enhancements/blob/master/enhancements/baremetal/an-slo-for-baremetal.md
 
 - ns: openshift-machine-api
   name: machine-api-controllers-XXXXXXXXXX-XXXXX
-  url: 
-  condition: OCP inbox
-  crd:
-    - name: dnses.operator.openshift.io
-      kind: DNS
-      apiversion: 
-      url: 
+  url: https://github.com/openshift/machine-api-operator
+  install: OCP inbox
   desc: |-
-    xxx
-    2
+    - machine-controller: Machineリソースを管理する。クラウドや仮想基盤の環境依存の処理は、Cluster APIのInfrastructure Providerを流用している。
+      - https://github.com/openshift/cluster-api-provider-gcp
+      - https://github.com/openshift/cluster-api-provider-azure
+      - https://github.com/openshift/cluster-api-provider-aws
+      - https://github.com/openshift/machine-api-operator/tree/master/pkg/controller/vsphere
+      - https://github.com/openshift/cluster-api-provider-openstack
+      - https://github.com/openshift/cluster-api-provider-baremetal
+      - https://github.com/openshift/cluster-api-provider-ovirt
+    - machineset-controller: Machineのレプリカ数が期待された値になっていることを保証する (PodにおけるReplicaSetのMachine版のような位置付け)
+    - machine-healthcheck-controller: MachineHealthCheckリソースを管理する。対象のMachineがHealthCheckの要件を満たすかを確認し、満たさない場合は復旧を試みる。
+    - nodelink-controller: Nodeオブジェクトをwatchし、対応するMachineオブジェクトから正しく参照されているかを確認する
 
 - ns: openshift-machine-api
   name: machine-api-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/machine-api-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: machines.machine.openshift.io
       kind: Machine
@@ -880,29 +887,31 @@ descriptions:
       url: https://github.com/openshift/machine-api-operator/blob/master/install/0000_30_machine-api-operator_07_machinehealthcheck.crd.yaml
   desc: |-
     MAO: Machie API Operator
-    ノードのプロビジョニングを制御する、Machin APIのPod群を管理するOperator
 
-    machine-api-operator: /machine-api-operator
+    ノードのプロビジョニングを制御する、Machin APIのPod群を管理するOperator
+    https://github.com/openshift/machine-api-operator/blob/master/docs/user/machine-api-operator-overview.md
 
 - ns: openshift-machine-config-operator
   name: machine-config-controller-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/machine-config-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
-    xxx
-    2
+    MachineConfigオブジェクトで定義された設定(desired state)になるよう、Machineの設定を更新するための調整をするコントローラ。
+    machine-config-controllerの指示により、各Machine上で稼動するmachine-config-daemonが実際の設定適用+再起動を行う。
+    https://github.com/openshift/machine-config-operator/blob/master/docs/MachineConfigController.md
 
 - ns: openshift-machine-config-operator
   name: machine-config-daemon-XXXXX
   url: https://github.com/openshift/machine-config-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     DaemonSetとして各ノードで稼動し、該当ノードのOSアップデートおよびMachine Configの設定の反映を実施する。
+    https://github.com/openshift/machine-config-operator/blob/master/docs/MachineConfigDaemon.md
 
 - ns: openshift-machine-config-operator
   name: machine-config-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/machine-config-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: machineconfigs.machineconfiguration.openshift.io
       kind: MachineConfig
@@ -920,6 +929,10 @@ descriptions:
       kind: ContainerRuntimeConfig
       apiversion: machineconfiguration.openshift.io/v1
       url: https://github.com/openshift/machine-config-operator/blob/master/install/0000_80_machine-config-operator_01_containerruntimeconfig.crd.yaml
+    - name: controllerconfigs.machineconfiguration.openshift.io
+      kind: ControllerConfig
+      apiversion: machineconfiguration.openshift.io/v1
+      url: https://github.com/openshift/machine-config-operator/blob/master/manifests/controllerconfig.crd.yaml
   desc: |-
     MCO: Machine Config Operator
 
@@ -932,21 +945,22 @@ descriptions:
 - ns: openshift-machine-config-operator
   name: machine-config-server-XXXXX
   url: https://github.com/openshift/machine-config-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     新規にクラスターの参加するノードに対して、Ignitionファイルを提供する。
+    https://github.com/openshift/machine-config-operator/blob/master/docs/MachineConfigServer.md
 
 - ns: openshift-marketplace
   name: certified-operators-XXXXX
   url: https://github.com/openshift/operator-framework-olm
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     ISVによってサポートが提供されるOperator
 
 - ns: openshift-marketplace
   name: community-operators-XXXXX
   url: https://github.com/openshift/operator-framework-olm
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     コミュニティで管理されている、OpenShift/OKD用のOperator Catalog (Registry Server)。サポートはない。
     https://github.com/redhat-openshift-ecosystem/community-operators-prod
@@ -954,7 +968,7 @@ descriptions:
 - ns: openshift-marketplace
   name: marketplace-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/operator-framework/operator-marketplace
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: operatorhubs.config.openshift.io
       kind: OperatorHub
@@ -966,14 +980,14 @@ descriptions:
 - ns: openshift-marketplace
   name: redhat-marketplace-XXXXX
   url: https://github.com/openshift/operator-framework-olm
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Red Hat Marketplaceから購入できる認定ソフトウェアを提供するOperator catalog
 
 - ns: openshift-marketplace
   name: redhat-operators-XXXXX
   url: https://github.com/openshift/operator-framework-olm
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Red Hat製品のOperator catalogを提供する。
     Red Hatからのサポートあり。
@@ -981,7 +995,7 @@ descriptions:
 - ns: openshift-monitoring
   name: alertmanager-main-X
   url: https://github.com/openshift/prometheus-alertmanager
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: dnses.operator.openshift.io
       kind: DNS
@@ -993,7 +1007,7 @@ descriptions:
 - ns: openshift-monitoring
   name: cluster-monitoring-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-monitoring-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: alertingrules.monitoring.openshift.io
       kind: AlertingRule
@@ -1016,7 +1030,7 @@ descriptions:
 - ns: openshift-monitoring
   name: kube-state-metrics-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/kube-state-metrics
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: dnses.operator.openshift.io
       kind: DNS
@@ -1028,14 +1042,14 @@ descriptions:
 - ns: openshift-monitoring
   name: node-exporter-XXXXX
   url: https://github.com/openshift/node_exporter
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     ハードウェアおよびOS関連のメトリックスのPrometheus exporter。
 
 - ns: openshift-monitoring
   name: openshift-state-metrics-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/openshift-state-metrics
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: clusterresourcequotas.quota.openshift.io
       kind: ClusterResourceQuota
@@ -1047,7 +1061,7 @@ descriptions:
 - ns: openshift-monitoring
   name: prometheus-adapter-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/k8s-prometheus-adapter
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Prometheusの任意のメトリクスをカスタム・外部メトリクスとして利用するためのAPIサーバ。
     Horizontal Pod Autoscalingやoc adm top {pods,nodes}で使用するためのクラスターリソースのメトリックスを提供する。
@@ -1055,14 +1069,14 @@ descriptions:
 - ns: openshift-monitoring
   name: prometheus-k8s-X
   url: https://github.com/openshift/prometheus
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Prometheus モニタリングサーバーの本体。時系列データベースと、メトリックスルールの評価エンジンからなる。
 
 - ns: openshift-monitoring
   name: prometheus-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/prometheus-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: alertmanagerconfigs.monitoring.coreos.com
       kind: AlertmanagerConfig
@@ -1105,7 +1119,7 @@ descriptions:
 - ns: openshift-monitoring
   name: prometheus-operator-admission-webhook-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/prometheus-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     以下の確認/変更を行うAdmission Webhook。
     - PrometheusRulesのannotationsが文字列値になっていること
@@ -1116,7 +1130,7 @@ descriptions:
 - ns: openshift-monitoring
   name: telemeter-client-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/telemeter
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Remote Health Monitoringで使用するために、Red Hatにテレメトリデータを定期的 (デフォルトでは4分30秒ごと) に送信するコンポーネント。
 
@@ -1125,14 +1139,14 @@ descriptions:
 - ns: openshift-monitoring
   name: thanos-querier-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/thanos
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     OpenShiftのコアメトリックスとユーザー定義プロジェクトのメトリックスを集約および重複排除する
 
 - ns: openshift-multus
   name: multus-XXXXX
   url: https://github.com/openshift/multus-cni
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     Podに複数のインターフェースを構成し、それぞれ別のネットワークに接続できるようにするCNIプラグイン。
     確には、他の(複数の)CNIプラグインを呼び出すことができるメタプラグインとして振る舞う。
@@ -1141,14 +1155,14 @@ descriptions:
 - ns: openshift-multus
   name: multus-additional-cni-plugins-XXXXX
   url: https://github.com/openshift/multus-cni
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     multus用の追加のCNIプラグインをインストールする
 
 - ns: openshift-multus
   name: multus-admission-controller-XXXXX
   url: https://github.com/openshift/multus-admission-controller
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     リソースがNetwork Plumbling Working Groupで定義したCRD定義に適合しているかをチェックするAdmission Controller。
     具体的には、カスタムリソース `NetworkAttachmentDefinition` 作成時にフォーマットが正しいかどうかをチェックする。
@@ -1156,7 +1170,7 @@ descriptions:
 - ns: openshift-multus
   name: network-metrics-daemon-XXXXX
   url: https://github.com/openshift/network-metrics-daemon
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     ネットワーク関連のメトリックを収集し、公開するデーモン。
     kubeletが収集しているネットワーク関連のメトリック(container_network_receive_bytes_total, container_network_transmit_packets_dropped_total等)には `interface` ラベルがついているが、multusで複数ネットワークに接続している場合、どのインターフェースがどのネットワークに接続しているかがわからない。
@@ -1167,21 +1181,21 @@ descriptions:
 - ns: openshift-network-diagnostics
   name: network-check-source-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-network-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     TCPのエンドポイントにアクセスできるかどうか確認する (送り側)
 
 - ns: openshift-network-diagnostics
   name: network-check-target-XXXXX
   url: https://github.com/openshift/cluster-network-operator
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     TCPのエンドポイントにアクセスできるかどうか確認する (受け側)
 
 - ns: openshift-network-operator
   name: network-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cluster-network-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: network-attachment-definitions.k8s.cni.cncf.io
       kind: NetworkAttachmentDefinition
@@ -1274,7 +1288,7 @@ descriptions:
 - ns: openshift-oauth-apiserver
   name: apiserver-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/oauth-apiserver
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: authentications.config.openshift.io
       kind: Authentication
@@ -1292,7 +1306,7 @@ descriptions:
 - ns: openshift-operator-lifecycle-manager
   name: catalog-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/operator-framework-olm
-  condition: OCP inbox
+  install: OCP inbox
   desc: |-
     - Operatorの依存関係を解決し、必要なものをインストールする
     - Operator Bundle (Operatorのメタデータ、Operatorが管理するCRD、Operatorが必要とするSA, Role, Deployment等のリソースを記載したCSV (ClusterServiceVersion) 等をまとめたもの)をpullして展開する
@@ -1301,7 +1315,7 @@ descriptions:
 - ns: openshift-operator-lifecycle-manager
   name: olm-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/operator-framework-olm
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: catalogsources.operators.coreos.com
       kind: CatalogSource
@@ -1342,7 +1356,7 @@ descriptions:
 - ns: openshift-operator-lifecycle-manager
   name: package-server-manager-XXXXXXXXXX-XXXXX
   url:  https://github.com/openshift/operator-framework-olm
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: dnses.operator.openshift.io
       kind: DNS
@@ -1354,7 +1368,7 @@ descriptions:
 - ns: openshift-operator-lifecycle-manager
   name: packageserver-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/operator-framework-olm
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: dnses.operator.openshift.io
       kind: DNS
@@ -1369,7 +1383,7 @@ descriptions:
 - ns: openshift-sdn
   name: sdn-XXXXX
   url: https://github.com/openshift/sdn
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: networks.config.openshift.io
       kind: Network
@@ -1402,7 +1416,7 @@ descriptions:
 - ns: openshift-sdn
   name: sdn-controller-XXXXX
   url: https://github.com/openshift/sdn
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: networks.config.openshift.io
       kind: Network
@@ -1434,7 +1448,7 @@ descriptions:
 - ns: openshift-service-ca-operator
   name: service-ca-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/service-ca-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: servicecas.operator.openshift.io
       kind: ServiceCA
@@ -1447,7 +1461,7 @@ descriptions:
 - ns: openshift-service-ca
   name: service-ca-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/service-ca-operator
-  condition: OCP inbox
+  install: OCP inbox
   crd:
     - name: servicecas.operator.openshift.io
       kind: ServiceCA
@@ -1467,7 +1481,7 @@ descriptions:
 - ns: openshift-user-workload-monitoring
   name: prometheus-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/prometheus-operator
-  condition: "Set `enableUserWorkload: true` in `cluster-monitoring-config` ConfigMap in openshift-monitoring namespace."
+  install: "Set `enableUserWorkload: true` in `cluster-monitoring-config` ConfigMap in openshift-monitoring namespace."
   crd:
     - name: alertmanagerconfigs.monitoring.coreos.com
       kind: AlertmanagerConfig
@@ -1507,14 +1521,14 @@ descriptions:
 - ns: openshift-user-workload-monitoring
   name: prometheus-user-workload-X
   url: https://github.com/openshift/prometheus
-  condition: "Set `enableUserWorkload: true` in `cluster-monitoring-config` ConfigMap in openshift-monitoring namespace."
+  install: "Set `enableUserWorkload: true` in `cluster-monitoring-config` ConfigMap in openshift-monitoring namespace."
   desc: |-
     ユーザー定義プロジェクトのモニタリング用のPrometheusサーバー
 
 - ns: openshift-user-workload-monitoring
   name: thanos-ruler-user-workload-X
   url: https://github.com/openshift/thanos
-  condition: "Set `enableUserWorkload: true` in `cluster-monitoring-config` ConfigMap in openshift-monitoring namespace."
+  install: "Set `enableUserWorkload: true` in `cluster-monitoring-config` ConfigMap in openshift-monitoring namespace."
   desc: |-
     ユーザー定義プロジェクトの用のルール/アラート判定エンジン
 

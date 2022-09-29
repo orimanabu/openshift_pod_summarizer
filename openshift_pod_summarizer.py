@@ -16,7 +16,7 @@ def load_desc():
         desc = yaml.load(f, Loader=yaml.FullLoader)
     for item in desc['descriptions']:
         print('** item={}'.format(item))
-        desc_hash[(item['ns'], item['name'])] = {'desc':item.get('desc', ''), 'url':item.get('url', ''), 'crd':item.get('crd', ''), 'condition':item.get('condition', '')}
+        desc_hash[(item['ns'], item['name'])] = {'desc':item.get('desc', ''), 'url':item.get('url', ''), 'crd':item.get('crd', ''), 'how_to_install':item.get('install', '')}
     return desc_hash
 
 def load_nodes():
@@ -43,12 +43,6 @@ def hostname2role(hostname):
             role = role + '/'
         role = role + 'worker'
     return role
-
-# def print_nodes():
-#     print('# masters:')
-#     pprint.pprint(masters)
-#     print('# workers:')
-#     pprint.pprint(workers)
 
 def write_row(sheet, array, start_row, start_col, color):
     for x, cell in enumerate(array):
@@ -229,7 +223,7 @@ header_labels = [
     'description',
     'url',
     'custom_resources',
-    'condition',
+    'how_to_install',
     'num_of_pods',
     'owner_kind',
     'owner_name',
@@ -303,8 +297,8 @@ for item in json_data['items']:
 
     xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
 
-    xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
-    set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
+    xls_input_cell_by_key(sheet, current_row, 'how_to_install', get_desc_info(md['namespace'], pod_name, 'how_to_install'))
+    set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['how_to_install']))
 
     if refs:
         ref = refs[0]
@@ -344,8 +338,8 @@ for item in json_data['items']:
 # 
 #         xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
 # 
-#         xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
-#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
+#         xls_input_cell_by_key(sheet, current_row, 'how_to_install', get_desc_info(md['namespace'], pod_name, 'how_to_install'))
+#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['how_to_install']))
 # 
 #         xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
 #         xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
@@ -376,8 +370,8 @@ for item in json_data['items']:
 # 
 #         xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
 # 
-#         xls_input_cell_by_key(sheet, current_row, 'condition', get_desc_info(md['namespace'], pod_name, 'condition'))
-#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['condition']))
+#         xls_input_cell_by_key(sheet, current_row, 'how_to_install', get_desc_info(md['namespace'], pod_name, 'how_to_install'))
+#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['how_to_install']))
 # ###
 
     print('  affinity:{}'.format(spec.get('affinity', '')))
@@ -471,7 +465,7 @@ for col in sheet.columns:
         target_width = 30
     elif col[0].value == 'custom_resources':
         target_width = 30
-    elif col[0].value == 'condition':
+    elif col[0].value == 'how_to_install':
         target_width = 30
     elif col[0].value == 'affinity':
         target_width = 30
