@@ -10,6 +10,8 @@ import argparse
 import subprocess
 from urllib.parse import urlparse
 
+alldata = {}
+
 header_labels = [
     'ns',
     'pod_name',
@@ -58,24 +60,13 @@ def load_desc(path):
     with open(path, 'r') as f:
         desc = yaml.load(f, Loader=yaml.FullLoader)
     for item in desc['descriptions']:
-        # print('** item={}'.format(item))
         desc_hash[(item['ns'], item['name'])] = {'desc':item.get('desc', ''), 'url':item.get('url', ''), 'crd':item.get('crd', ''), 'how_to_install':item.get('install', '')}
     return desc_hash
 
-def load_nodes(node_json):
-    json_data = {}
-    if node_json:
-        with open(node_json, 'r') as f:
-            print('** node json: from', node_json)
-            json_data = json.load(f)
-    else:
-        print('** node json: from `kubectl get node -o json`')
-        output = subprocess.run('kubectl get node -o json'.split(), capture_output=True)
-        json_data = json.loads(output.stdout)
-
+def load_nodes():
     masters = []
     workers = []
-    for item in json_data['items']:
+    for item in alldata['Node']:
         hostname = item['metadata']['name']
         labels = item['metadata']['labels']
         if 'node-role.kubernetes.io/master' in labels:
@@ -84,16 +75,24 @@ def load_nodes(node_json):
             workers.append(hostname)
     return masters, workers
 
-def load_pods(pod_json):
+def load_offline_data(json_path):
     json_data = {}
-    if pod_json:
-        with open(pod_json, 'r') as f:
-            print('** pod json: from', pod_json)
-            return json.load(f)
+    if json_path:
+        with open(json_path, 'r') as f:
+            print('** json from {}'.format(json_path))
+            json_data = json.load(f)
+    else:
+        print('** json from `kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json`')
+        output = subprocess.run('kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json'.split(), capture_output=True)
+        json_data = json.loads(output.stdout)
 
-    print('** pod json: from `kubectl get pod -A -o json`')
-    output = subprocess.run('kubectl get pod -A -o json'.split(), capture_output=True)
-    return json.loads(output.stdout)
+    for item in json_data['items']:
+        kind = item['kind']
+        if not json_data.get(kind):
+            json_data[kind] = []
+        json_data[kind].append(item)
+
+    return json_data
 
 def hostname2role(hostname):
     role = ''
@@ -155,18 +154,23 @@ def normalize_owner_name(owner_kind, owner_name):
         return 'HOSTNAME'
     return owner_name
 
+def find_resource_json(kind, ns, name):
+    if alldata.get(kind):
+        for item in alldata[kind]:
+            if item['metadata']['namespace'] == ns and item['metadata']['name'] == name:
+                return item
+    return None
+    
 def normalize_owner_kind(owner_kind, owner_name, ns):
     if owner_kind == 'ReplicaSet':
-        output = subprocess.run('kubectl -n {} get {}/{} -o json'.format(ns, owner_kind, owner_name).split(), capture_output=True)
-        json_data = json.loads(output.stdout)
+        json_data = find_resource_json(owner_kind, ns, owner_name)
         refs = json_data['metadata'].get('ownerReferences')
         if refs:
-            kind = refs[0]['kind']
-            return '{} ({})'.format(owner_kind, kind)
+            owner_owner_kind = refs[0]['kind']
+            return '{} ({})'.format(owner_kind, owner_owner_kind)
     return owner_kind
 
 def get_number_of_pods(selector, owner_kind, owner_name, pod, ns):
-    print('%% selector={}, owner_kind={}, owner_name={}, ns={}'.format(selector, owner_kind, owner_name, ns))
     if owner_kind == 'DaemonSet':
         print('  ### selector:{}'.format(selector))
         # if 'node-role.kubernetes.io/master' in selector:
@@ -193,8 +197,7 @@ def get_number_of_pods(selector, owner_kind, owner_name, pod, ns):
         else:
             return 'Static Pod on masters and workers'
 
-    output = subprocess.run('kubectl -n {} get {}/{} -o json'.format(ns, owner_kind, owner_name).split(), capture_output=True)
-    json_data = json.loads(output.stdout)
+    json_data = find_resource_json(owner_kind, ns, owner_name)
     replicas = json_data['spec'].get('replicas')
     return 'replicas={}'.format(replicas)
 
@@ -240,13 +243,11 @@ def build_crd_str(desc, ns, pod_name):
     # print('  => !!! all_crd_str={}'.format(all_crd_str))
     return all_crd_str
 
-
 def set_cell_hyperlink(cell, url):
     if url == None or url == '':
         return
 
     parse_result = urlparse(url)
-    # print('%% parse_result.path=[{}]'.format(parse_result.path))
 
     if parse_result.path == '/':
         cell.value = url
@@ -254,13 +255,8 @@ def set_cell_hyperlink(cell, url):
         return
 
     path = parse_result.path[1:]
-    # print('%% path=[{}]'.format(path))
     if path[-1] == '/':
         path = path.rstrip()
-    # print('%% path=[{}]'.format(path))
-    
-    # if path.startswith('openshift/'):
-    #     path = path[len('openshift/'):]
     
     dirs = path.split('/')
     if len(dirs) >= 2:
@@ -274,19 +270,12 @@ def set_cell_wrap_text(cell):
     new_alignment.wrapText = True
     cell.alignment = new_alignment
 
-def argparse_debug(args):
-    print('* args: {}'.format(args))
-    print('* --live:', args.live)
-    print('* --output:', args.output)
-    print('* --pod-json:', args.pod_json)
-    print('* --node-json', args.node_json)
-    print('* --description-yaml', args.description_yaml)
-
 def main(args):
     desc = load_desc(args.description_yaml)
-    # masters, workers = load_nodes(args.node_json)
-    # print_nodes(masters, workers)
-    pods = load_pods(args.pod_json)
+    global alldata
+    alldata = load_offline_data(args.offline)
+    masters, workers = load_nodes()
+    print_nodes(masters, workers)
 
     book = openpyxl.Workbook()
     sheet = book.active
@@ -301,8 +290,7 @@ def main(args):
     write_row(sheet, header_labels, 1, 1, fill_header)
     current_row = current_row + 1
 
-    prev_pod_name = ''
-    for item in pods['items']:
+    for item in alldata['Pod']:
         md = item['metadata']
         spec = item['spec']
         status = item['status']
@@ -451,32 +439,32 @@ def main(args):
 
     book.save(args.output)
 
+def argparse_debug(args):
+    print('* args: {}'.format(args))
+    print('* --online:', args.online)
+    print('* --offline:', args.offline)
+    print('* --description-yaml', args.description_yaml)
+    print('* --output:', args.output)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--live', action='store_true')
-    parser.add_argument('--pod-json')
-    parser.add_argument('--node-json')
+    parser.add_argument('--online', action='store_true', default=True)
+    parser.add_argument('--offline')
     parser.add_argument('--description-yaml', default='./description.yaml')
     parser.add_argument('--output', default='./newresult.xlsx')
     args = parser.parse_args()
 
+    if args.offline:
+        print('* running in offline mode...')
+        args.online = False
+    else:
+        print('* running in online mode...')
+        output = subprocess.run('oc whoami'.split(), capture_output=True)
+        if output.returncode != 0:
+            print('* oc command failed, exit')
+            sys.exit(1)
+
     argparse_debug(args)
-    if args.live and (args.pod_json or args.node_json):
-        print('Cannot specify `--live` AND `--pod-json`.')
-        sys.exit(1)
 
     main(args)
     sys.exit()
-
-
-
-# desc = []
-# with open('description.yaml', 'w') as f:
-#     for key in sorted(pod_exists.keys()):
-#         ns, name = key.split('__')
-#         desc.append({
-#             "ns": ns,
-#             "name": name,
-#             "desc": ""
-#         })
-#     yaml.dump(desc, f)
