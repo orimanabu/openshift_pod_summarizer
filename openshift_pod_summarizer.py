@@ -197,6 +197,9 @@ def get_number_of_pods(selector, owner_kind, owner_name, pod, ns):
         else:
             return 'Static Pod on masters and workers'
 
+    if owner_kind == 'CatalogSource':
+        return ''
+
     json_data = find_resource_json(owner_kind, ns, owner_name)
     replicas = json_data['spec'].get('replicas')
     return 'replicas={}'.format(replicas)
