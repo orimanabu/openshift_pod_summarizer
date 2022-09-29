@@ -150,7 +150,7 @@ descriptions:
 - ns: openshift-cluster-csi-drivers
   name: manila-csi-driver-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/csi-driver-manila-operator
-  install: OCP inbox
+  install: OCP inbox, OpenStack
   crd:
     - name: clustercsidrivers.operator.openshift.io
       kind: ClusterCSIDriver
@@ -192,21 +192,21 @@ descriptions:
 - ns: openshift-cluster-csi-drivers
   name: aws-ebs-csi-driver-controller-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/aws-ebs-csi-driver
-  install: OCP inbox
+  install: OCP inbox, AWS
   desc: |-
     AWS EBS用のCSIドライバのController Plugin
 
 - ns: openshift-cluster-csi-drivers
   name: aws-ebs-csi-driver-node-XXXXX
   url: https://github.com/openshift/aws-ebs-csi-driver
-  install: OCP inbox
+  install: OCP inbox, AWS
   desc: |-
     AWS EBS用のCSIドライバのNode Plugin
 
 - ns: openshift-cluster-csi-drivers
   name: aws-ebs-csi-driver-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/aws-ebs-csi-driver-operator
-  install: OCP inbox
+  install: OCP inbox, AWS
   desc: |-
     AWS EBS CSI driverをデプロイするOperator (https://github.com/openshift/aws-ebs-csi-driver)。
     このOperatorは、cluster-storage-operatorからインストールされる。
