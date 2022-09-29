@@ -127,7 +127,7 @@ descriptions:
 - ns: openshift-cloud-credential-operator
   name: pod-identity-webhook-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/aws-pod-identity-webhook
-  install: OCP inbox
+  install: OCP inbox, AWS
   desc: |-
     AWSのIAMアクセスが必要なPodのためのMutating Webhook。
     AWSアクセスするPod用にIAM roleを作成し、PodのService Accountがそのroleを使用するようにtrust policyを変更する
@@ -146,6 +146,48 @@ descriptions:
 
     カスタムリソース経由で、クラウド環境のAPIエンドポイントと通信してクラウド環境のネットワーク設定を行うOperator。
     現時点では、CloudPrivateIPConfigを使ってk8sノードのVMインスタンスに対してプライベートIPアドレスの追加/削除を行うのみ。
+
+- ns: openshift-cluster-csi-drivers
+  name: manila-csi-driver-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/csi-driver-manila-operator
+  install: OCP inbox
+  crd:
+    - name: clustercsidrivers.operator.openshift.io
+      kind: ClusterCSIDriver
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_90_cluster_csi_driver_01_config.crd.yaml
+  desc: |-
+    Manila (OpenStack Shared File Systems service) CSI driverを管理するOperator
+
+- ns: openshift-cluster-csi-drivers
+  name: openstack-cinder-csi-driver-controller-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/cloud-provider-openstack
+  install: OCP inbox, OpenStack
+  desc: |-
+    Cinder (OpenStack Block Storage service) CSI driverのController Plugin
+
+- ns: openshift-cluster-csi-drivers
+  name: openstack-cinder-csi-driver-node-XXXXX
+  url: https://github.com/openshift/cloud-provider-openstack
+  install: OCP inbox, OpenStack
+  desc: |-
+    Cinder (OpenStack Block Storage service) CSI driverのNode Plugin
+
+- ns: openshift-cluster-csi-drivers
+  name: openstack-cinder-csi-driver-operator-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/openstack-cinder-csi-driver-operator
+  install: OCP inbox, OpenStack
+  crd:
+    - name: csisnapshotcontrollers.operator.openshift.io
+      kind: CSISnapshotController
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_80_csi_snapshot_controller_operator_01_crd.yaml
+    - name: clustercsidrivers.operator.openshift.io
+      kind: ClusterCSIDriver
+      apiversion: operator.openshift.io/v1
+      url: https://github.com/openshift/api/blob/master/operator/v1/0000_90_cluster_csi_driver_01_config.crd.yaml
+  desc: |-
+    Cinder (OpenStack Block Storage service) CSI driverを管理するOperator
 
 - ns: openshift-cluster-csi-drivers
   name: aws-ebs-csi-driver-controller-XXXXXXXXXX-XXXXX
@@ -1303,6 +1345,29 @@ descriptions:
     - v1.oauth.openshift.io
     - v1.user.openshift.io
 
+- ns: openshift-openstack-infra
+  name: coredns-HOSTNAME
+  url: https://github.com/openshift/coredns
+  install: OCP inbox, OpenStack IPI
+  desc: |-
+    OpenStack IPI環境で、ノードおよびapi, api-intの名前解決をするCoreDNS
+    2
+
+- ns: openshift-openstack-infra
+  name: haproxy-HOSTNAME
+  url: https://github.com/openshift/router
+  install: OCP inbox, OpenStack IPI
+  desc: |-
+    OpenStack IPI環境で、kube-apiserverへの接続を負荷分散するロードバランサ
+
+- ns: openshift-openstack-infra
+  name: keepalived-HOSTNAME
+  url: https://github.com/openshift/images
+  install: OCP inbox, OpenStack IPI
+  desc: |-
+    OpenStack IPI環境で、kube-apiserverおよびrouterへの接続するためのVIPを管理する
+    (このVIPに対してFloating IPを付与する)
+
 - ns: openshift-operator-lifecycle-manager
   name: catalog-operator-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/operator-framework-olm
@@ -1380,10 +1445,30 @@ descriptions:
     Aggregation Layer経由でOperator関連のAPIを処理する
     - v1.packages.operators.coreos.com
 
+- ns: openshift-ovn-kubernetes
+  name: ovnkube-master-XXXXX
+  url: https://github.com/openshift/ovn-kubernetes 
+  install: OCP inbox, OVN-Kubernetes
+  desc: |-
+    masterノードで稼動するOVN-Kubernete CNI PluginのDaemonSet。
+    - Northbound DB
+    - Southbound DB
+    - ovn-northd
+    - ovnkube-master
+
+- ns: openshift-ovn-kubernetes
+  name: ovnkube-node-XXXXX
+  url: https://github.com/openshift/ovn-kubernetes 
+  install: OCP inbox, OVN-Kubernetes
+  desc: |-
+    全てのノードで稼動するOVN-Kubernete CNI PluginのDaemonSet。
+    - ovn-controller
+    - ovnkube
+
 - ns: openshift-sdn
   name: sdn-XXXXX
   url: https://github.com/openshift/sdn
-  install: OCP inbox
+  install: OCP inbox, OpenShift-SDN
   crd:
     - name: networks.config.openshift.io
       kind: Network
@@ -1416,7 +1501,7 @@ descriptions:
 - ns: openshift-sdn
   name: sdn-controller-XXXXX
   url: https://github.com/openshift/sdn
-  install: OCP inbox
+  install: OCP inbo, OpenShift-SDNx
   crd:
     - name: networks.config.openshift.io
       kind: Network
