@@ -6,22 +6,72 @@ import json
 import yaml
 import pprint
 import openpyxl
+import argparse
 import subprocess
 from urllib.parse import urlparse
 
-def load_desc():
+header_labels = [
+    'ns',
+    'pod_name',
+    'description',
+    'url',
+    'custom_resources',
+    'how_to_install',
+    'num_of_pods',
+    'owner_kind',
+    'owner_name',
+    'affinity',
+    'dnsPolicy',
+    'enableServiceLinks',
+    'hostNetwork',
+    'hostPID',
+    # 'nodeName',
+    # 'role',
+    'nodeSelector',
+    'preemptionPolicy',
+    'priority',
+    'priorityClassName',
+    'restartPolicy',
+    'schedulerName',
+    'serviceAccount',
+    'serviceAccountName',
+    'pod_securityContext',
+    'tolerations',
+    'terminationGracePeriodSeconds',
+    'qosClass',
+    'container_name',
+    'initContainer',
+    'container_image',
+    'container_imagePullPolicy',
+    'container_resources',
+    'container_securityContext'
+]
+
+header2column = {}
+for i, label in enumerate(header_labels, 1):
+    # openxl column is 1-origin
+    header2column[label] = i
+
+def load_desc(path):
     desc = {}
     desc_hash = {}
-    with open('description.yaml', 'r') as f:
+    with open(path, 'r') as f:
         desc = yaml.load(f, Loader=yaml.FullLoader)
     for item in desc['descriptions']:
-        print('** item={}'.format(item))
+        # print('** item={}'.format(item))
         desc_hash[(item['ns'], item['name'])] = {'desc':item.get('desc', ''), 'url':item.get('url', ''), 'crd':item.get('crd', ''), 'how_to_install':item.get('install', '')}
     return desc_hash
 
-def load_nodes():
-    output = subprocess.run('kubectl get node -o json'.split(), capture_output=True)
-    json_data = json.loads(output.stdout)
+def load_nodes(node_json):
+    json_data = {}
+    if node_json:
+        with open(node_json, 'r') as f:
+            print('** node json: from', node_json)
+            json_data = json.load(f)
+    else:
+        print('** node json: from `kubectl get node -o json`')
+        output = subprocess.run('kubectl get node -o json'.split(), capture_output=True)
+        json_data = json.loads(output.stdout)
 
     masters = []
     workers = []
@@ -34,6 +84,17 @@ def load_nodes():
             workers.append(hostname)
     return masters, workers
 
+def load_pods(pod_json):
+    json_data = {}
+    if pod_json:
+        with open(pod_json, 'r') as f:
+            print('** pod json: from', pod_json)
+            return json.load(f)
+
+    print('** pod json: from `kubectl get pod -A -o json`')
+    output = subprocess.run('kubectl get pod -A -o json'.split(), capture_output=True)
+    return json.loads(output.stdout)
+
 def hostname2role(hostname):
     role = ''
     if hostname in masters:
@@ -43,6 +104,12 @@ def hostname2role(hostname):
             role = role + '/'
         role = role + 'worker'
     return role
+
+def print_nodes(masters, workers):
+    print('# masters:')
+    pprint.pprint(masters)
+    print('# workers:')
+    pprint.pprint(workers)
 
 def write_row(sheet, array, start_row, start_col, color):
     for x, cell in enumerate(array):
@@ -99,6 +166,7 @@ def normalize_owner_kind(owner_kind, owner_name, ns):
     return owner_kind
 
 def get_number_of_pods(selector, owner_kind, owner_name, ns):
+    print('%% selector={}, owner_kind={}, owner_name={}, ns={}'.format(selector, owner_kind, owner_name, ns))
     if owner_kind == 'DaemonSet':
         print('  ### selector:{}'.format(selector))
         # if 'node-role.kubernetes.io/master' in selector:
@@ -130,7 +198,7 @@ def xls_input_cell_by_key(sheet, row, key, value):
     sheet.cell(row=row, column=header2column[key]).alignment = openpyxl.styles.Alignment(vertical='center')
     sheet.cell(row=row, column=header2column[key]).font = openpyxl.styles.fonts.Font(name='Source Code Pro Medium')
 
-def make_container_cells(current_row, ctr, is_init_container):
+def make_container_cells(sheet, current_row, ctr, is_init_container):
     xls_input_cell_by_key(sheet, current_row, 'container_name', ctr.get('name', ''))
     xls_input_cell_by_key(sheet, current_row, 'initContainer', str(is_init_container).lower() if is_init_container else '')
     xls_input_cell_by_key(sheet, current_row, 'container_image', ctr.get('image', ''))
@@ -138,15 +206,15 @@ def make_container_cells(current_row, ctr, is_init_container):
     xls_input_cell_by_key(sheet, current_row, 'container_resources', dict2yaml(ctr.get('resources', '')))
     xls_input_cell_by_key(sheet, current_row, 'container_securityContext', dict2yaml(ctr.get('securityContext', '')))
 
-def get_desc_info(ns, pod_name, key):
+def get_desc_info(desc_hash, ns, pod_name, key):
     desc = desc_hash.get((ns, pod_name), None)
     if desc:
         return desc.get(key, '')
     return ''
 
-def build_crd_str(ns, pod_name):
+def build_crd_str(desc, ns, pod_name):
     all_crd_str = ''
-    crds = get_desc_info(ns, pod_name, 'crd')
+    crds = get_desc_info(desc, ns, pod_name, 'crd')
     # print('  => !!! crds={}'.format(crds))
     for crd in crds:
         kind = crd.get('kind')
@@ -201,282 +269,201 @@ def set_cell_wrap_text(cell):
     new_alignment.wrapText = True
     cell.alignment = new_alignment
 
-desc_hash = load_desc()
-masters, workers = load_nodes()
-# print_nodes()
+def argparse_debug(args):
+    print('* args: {}'.format(args))
+    print('* --live:', args.live)
+    print('* --output:', args.output)
+    print('* --pod-json:', args.pod_json)
+    print('* --node-json', args.node_json)
+    print('* --description-yaml', args.description_yaml)
 
-book = openpyxl.Workbook()
-sheet = book.active
-sheet.title = 'Pods'
-current_row = 1
-fill_header = openpyxl.styles.PatternFill(patternType='solid', fgColor='D9EAD3')
-# sheet.freeze_panes = 'A2'
-sheet.freeze_panes = 'C2'
+def main(args):
+    desc = load_desc(args.description_yaml)
+    # masters, workers = load_nodes(args.node_json)
+    # print_nodes(masters, workers)
+    pods = load_pods(args.pod_json)
 
-output = subprocess.run('kubectl get pod -A -o json'.split(), capture_output=True)
-json_data = json.loads(output.stdout)
+    book = openpyxl.Workbook()
+    sheet = book.active
+    sheet.title = 'Pods'
+    current_row = 1
+    fill_header = openpyxl.styles.PatternFill(patternType='solid', fgColor='D9EAD3')
+    # sheet.freeze_panes = 'A2'
+    sheet.freeze_panes = 'C2'
 
+    pod_exists = {}
 
-header_labels = [
-    'ns',
-    'pod_name',
-    'description',
-    'url',
-    'custom_resources',
-    'how_to_install',
-    'num_of_pods',
-    'owner_kind',
-    'owner_name',
-    'affinity',
-    'dnsPolicy',
-    'enableServiceLinks',
-    'hostNetwork',
-    'hostPID',
-    # 'nodeName',
-    # 'role',
-    'nodeSelector',
-    'preemptionPolicy',
-    'priority',
-    'priorityClassName',
-    'restartPolicy',
-    'schedulerName',
-    'serviceAccount',
-    'serviceAccountName',
-    'pod_securityContext',
-    'tolerations',
-    'terminationGracePeriodSeconds',
-    'qosClass',
-    'container_name',
-    'initContainer',
-    'container_image',
-    'container_imagePullPolicy',
-    'container_resources',
-    'container_securityContext'
-]
+    write_row(sheet, header_labels, 1, 1, fill_header)
+    current_row = current_row + 1
 
-pod_exists = {}
+    prev_pod_name = ''
+    for item in pods['items']:
+        md = item['metadata']
+        spec = item['spec']
+        status = item['status']
+        row = []
 
-header2column = {}
-for i, label in enumerate(header_labels, 1):
-    # openxl column is 1-origin
-    header2column[label] = i
+        if status['phase'] != 'Running':
+            continue
 
-write_row(sheet, header_labels, 1, 1, fill_header)
-current_row = current_row + 1
+        refs = md.get('ownerReferences')
+        # rename 'pod_name' column
+        pod_name = normalize_pod_name(md['name'], refs[0]['kind'] if refs else '', spec['nodeName'])
 
-prev_pod_name = ''
-for item in json_data['items']:
-    md = item['metadata']
-    spec = item['spec']
-    status = item['status']
-    row = []
+        if pod_exists.get((md['namespace'], pod_name)):
+            print('  => SKIP')
+            continue
+        pod_exists[(md['namespace'], pod_name)] = True
 
-    if status['phase'] != 'Running':
-        continue
+        print('* ns:{}, pod_name:{}, phase:{}'.format(md['namespace'], md['name'], status['phase']))
+        xls_input_cell_by_key(sheet, current_row, 'ns', md['namespace'])
+        xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
 
-###
-    refs = md.get('ownerReferences')
-    # rename 'pod_name' column
-    pod_name = normalize_pod_name(md['name'], refs[0]['kind'] if refs else '', spec['nodeName'])
+        xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(desc, md['namespace'], pod_name, 'desc'))
+        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
 
-    if pod_exists.get((md['namespace'], pod_name)):
-        print('  => SKIP')
-        continue
-    pod_exists[(md['namespace'], pod_name)] = True
+        xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(desc, md['namespace'], pod_name, 'url'))
+        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
+        set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(desc, md['namespace'], pod_name, 'url'))
 
-    print('* ns:{}, pod_name:{}, phase:{}'.format(md['namespace'], md['name'], status['phase']))
-    xls_input_cell_by_key(sheet, current_row, 'ns', md['namespace'])
-    xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
+        xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(desc, md['namespace'], pod_name))
 
-    xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
-    set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
+        xls_input_cell_by_key(sheet, current_row, 'how_to_install', get_desc_info(desc, md['namespace'], pod_name, 'how_to_install'))
+        set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['how_to_install']))
 
-    xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
-    set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
-    set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
+        if refs:
+            ref = refs[0]
+            if len(refs) > 1:
+                print('!! more than one ownerReferences !!')
+                sys.exit(1)
 
-    xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
+            # 'number of pods' column
+            xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], md['namespace']))
+            xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
+            xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
 
-    xls_input_cell_by_key(sheet, current_row, 'how_to_install', get_desc_info(md['namespace'], pod_name, 'how_to_install'))
-    set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['how_to_install']))
+        print('  affinity:{}'.format(spec.get('affinity', '')))
+        xls_input_cell_by_key(sheet, current_row, 'affinity', dict2yaml(spec.get('affinity', '')))
+        print('  dnsPolicy:{}, hostNetwork:{}, hostPID:{}'.format(spec.get('dnsPolicy', ''), spec.get('hostNetwork', ''), spec.get('hostPID', '')))
+        xls_input_cell_by_key(sheet, current_row, 'dnsPolicy', spec.get('dnsPolicy', ''))
+        xls_input_cell_by_key(sheet, current_row, 'enableServiceLinks', str(spec.get('enableServiceLinks', '')).lower())
+        xls_input_cell_by_key(sheet, current_row, 'hostNetwork', str(spec.get('hostNetwork', '')).lower())
+        xls_input_cell_by_key(sheet, current_row, 'hostPID', str(spec.get('hostPID', '')).lower())
+        # print('  nodeName:{}, role:{}, nodeSelector:{}'.format(spec.get('nodeName', ''), hostname2role(spec.get('nodeName', '')), spec.get('nodeSelector', '')))
+        # xls_input_cell_by_key(sheet, current_row, 'nodeName', spec.get('nodeName', ''))
+        # xls_input_cell_by_key(sheet, current_row, 'role', hostname2role(spec.get('nodeName', '')))
+        xls_input_cell_by_key(sheet, current_row, 'nodeSelector', dict2yaml(spec.get('nodeSelector', '')))
+        print('  preemptionPolicy:{}, priorityClassName:{}'.format(spec.get('preemptionPolicy', ''), spec.get('priorityClassName', '')))
+        xls_input_cell_by_key(sheet, current_row, 'preemptionPolicy', spec.get('preemptionPolicy', ''))
+        xls_input_cell_by_key(sheet, current_row, 'priority', spec.get('priority', ''))
+        xls_input_cell_by_key(sheet, current_row, 'priorityClassName', spec.get('priorityClassName', ''))
+        xls_input_cell_by_key(sheet, current_row, 'restartPolicy', spec.get('restartPolicy', ''))
+        xls_input_cell_by_key(sheet, current_row, 'schedulerName', spec.get('schedulerName', ''))
+        xls_input_cell_by_key(sheet, current_row, 'serviceAccount', spec.get('serviceAccount', ''))
+        xls_input_cell_by_key(sheet, current_row, 'serviceAccountName', spec.get('serviceAccountName', ''))
+        print('  pod_securityContext:{}'.format(spec.get('securityContext', '')))
+        xls_input_cell_by_key(sheet, current_row, 'pod_securityContext', dict2yaml(spec.get('securityContext', '')))
+        print('  tolerations:{}'.format(spec.get('tolerations', '')))
+        xls_input_cell_by_key(sheet, current_row, 'tolerations', dict2yaml(spec.get('tolerations', '')))
+        xls_input_cell_by_key(sheet, current_row, 'terminationGracePeriodSeconds', spec.get('terminationGracePeriodSeconds', ''))
+        print('  qosClass:{}'.format(status.get('qosClass', '')))
+        xls_input_cell_by_key(sheet, current_row, 'qosClass', status.get('qosClass', ''))
 
-    if refs:
-        ref = refs[0]
-        if len(refs) > 1:
-            print('!! more than one ownerReferences !!')
-            sys.exit(1)
+        nctrs = 0
+        row_pod_container_start = 0
+        for ctr in spec.get('initContainers', list()):
+            make_container_cells(sheet, current_row, ctr, True)
+            if nctrs == 0:
+                print('    ctr_name:{}, ctr_resources:{}, ctr_securityContext:{}'.format(
+                    ctr.get('name', ''),
+                    ctr.get('resources', ''),
+                    ctr.get('securityContext', '')
+                ))
+                row_pod_container_start = current_row
+            else:
+                for col in range(header2column['ns'], header2column['qosClass'] + 1):
+                    sheet.merge_cells(start_row=row_pod_container_start, end_row=current_row, start_column=col, end_column=col)
 
-        # 'number of pods' column
-        xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], md['namespace']))
-        xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
-        xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
+            nctrs += 1
+            current_row = current_row + 1
 
-# ###
-#     print('* ns:{}, pod_name:{}, phase:{}'.format(md['namespace'], md['name'], status['phase']))
-#     xls_input_cell_by_key(sheet, current_row, 'ns', md['namespace'])
-#     xls_input_cell_by_key(sheet, current_row, 'pod_name', md['name'])
-# 
-#     refs = md.get('ownerReferences')
-#     if refs:
-#         ref = refs[0]
-#         print('  owner_kind:{}, owner_name:{}'.format(ref['kind'], ref['name']))
-# 
-#         # rename 'pod_name' column
-#         pod_name = normalize_pod_name(md['name'], ref['kind'], spec['nodeName'])
-#         if pod_exists.get((md['namespace'], pod_name)):
-#             print('  => SKIP')
-#             continue
-#         pod_exists[(md['namespace'], pod_name)] = True
-#         xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
-#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
-#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
-#         set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'how_to_install', get_desc_info(md['namespace'], pod_name, 'how_to_install'))
-#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['how_to_install']))
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
-#         xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
-# 
-#         # 'number of pods' column
-#         xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], md['namespace']))
-# 
-#         if len(refs) > 1:
-#             print('!! more than one ownerReferences !!')
-#             sys.exit(1)
-# 
-#     else:
-#         pod_name = normalize_pod_name(md['name'], '', spec['nodeName'])
-#         # key = ns_pod_key(md['namespace'], pod_name)
-#         print('  => !!! ns={}, name={}, pod_name={}'.format(md['namespace'], md['name'], pod_name))
-#         if pod_exists.get((md['namespace'], pod_name)):
-#             print('  => SKIP')
-#             continue
-#         pod_exists[(md['namespace'], pod_name)] = True
-#         xls_input_cell_by_key(sheet, current_row, 'pod_name', pod_name)
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'description', get_desc_info(md['namespace'], pod_name, 'desc'))
-#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['description']))
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'url', get_desc_info(md['namespace'], pod_name, 'url'))
-#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['url']))
-#         set_cell_hyperlink(sheet.cell(row=current_row, column=header2column['url']), get_desc_info(md['namespace'], pod_name, 'url'))
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'custom_resources', build_crd_str(md['namespace'], pod_name))
-# 
-#         xls_input_cell_by_key(sheet, current_row, 'how_to_install', get_desc_info(md['namespace'], pod_name, 'how_to_install'))
-#         set_cell_wrap_text(sheet.cell(row=current_row, column=header2column['how_to_install']))
-# ###
+        for ctr in spec.get('containers', list()):
+            make_container_cells(sheet, current_row, ctr, False)
+            if nctrs == 0:
+                print('    ctr_name:{}, ctr_resources:{}, ctr_securityContext:{}'.format(
+                    ctr.get('name', ''),
+                    ctr.get('resources', ''),
+                    ctr.get('securityContext', '')
+                ))
+                row_pod_container_start = current_row
+            else:
+                for col in range(header2column['ns'], header2column['qosClass'] + 1):
+                    sheet.merge_cells(start_row=row_pod_container_start, end_row=current_row, start_column=col, end_column=col)
 
-    print('  affinity:{}'.format(spec.get('affinity', '')))
-    xls_input_cell_by_key(sheet, current_row, 'affinity', dict2yaml(spec.get('affinity', '')))
-    print('  dnsPolicy:{}, hostNetwork:{}, hostPID:{}'.format(spec.get('dnsPolicy', ''), spec.get('hostNetwork', ''), spec.get('hostPID', '')))
-    xls_input_cell_by_key(sheet, current_row, 'dnsPolicy', spec.get('dnsPolicy', ''))
-    xls_input_cell_by_key(sheet, current_row, 'enableServiceLinks', str(spec.get('enableServiceLinks', '')).lower())
-    xls_input_cell_by_key(sheet, current_row, 'hostNetwork', str(spec.get('hostNetwork', '')).lower())
-    xls_input_cell_by_key(sheet, current_row, 'hostPID', str(spec.get('hostPID', '')).lower())
-    print('  nodeName:{}, role:{}, nodeSelector:{}'.format(spec.get('nodeName', ''), hostname2role(spec.get('nodeName', '')), spec.get('nodeSelector', '')))
-    # xls_input_cell_by_key(sheet, current_row, 'nodeName', spec.get('nodeName', ''))
-    # xls_input_cell_by_key(sheet, current_row, 'role', hostname2role(spec.get('nodeName', '')))
-    xls_input_cell_by_key(sheet, current_row, 'nodeSelector', dict2yaml(spec.get('nodeSelector', '')))
-    print('  preemptionPolicy:{}, priorityClassName:{}'.format(spec.get('preemptionPolicy', ''), spec.get('priorityClassName', '')))
-    xls_input_cell_by_key(sheet, current_row, 'preemptionPolicy', spec.get('preemptionPolicy', ''))
-    xls_input_cell_by_key(sheet, current_row, 'priority', spec.get('priority', ''))
-    xls_input_cell_by_key(sheet, current_row, 'priorityClassName', spec.get('priorityClassName', ''))
-    xls_input_cell_by_key(sheet, current_row, 'restartPolicy', spec.get('restartPolicy', ''))
-    xls_input_cell_by_key(sheet, current_row, 'schedulerName', spec.get('schedulerName', ''))
-    xls_input_cell_by_key(sheet, current_row, 'serviceAccount', spec.get('serviceAccount', ''))
-    xls_input_cell_by_key(sheet, current_row, 'serviceAccountName', spec.get('serviceAccountName', ''))
-    print('  pod_securityContext:{}'.format(spec.get('securityContext', '')))
-    xls_input_cell_by_key(sheet, current_row, 'pod_securityContext', dict2yaml(spec.get('securityContext', '')))
-    print('  tolerations:{}'.format(spec.get('tolerations', '')))
-    xls_input_cell_by_key(sheet, current_row, 'tolerations', dict2yaml(spec.get('tolerations', '')))
-    xls_input_cell_by_key(sheet, current_row, 'terminationGracePeriodSeconds', spec.get('terminationGracePeriodSeconds', ''))
-    print('  qosClass:{}'.format(status.get('qosClass', '')))
-    xls_input_cell_by_key(sheet, current_row, 'qosClass', status.get('qosClass', ''))
+            nctrs += 1
+            current_row = current_row + 1
 
-    nctrs = 0
-    row_pod_container_start = 0
-    for ctr in spec.get('initContainers', list()):
-        make_container_cells(current_row, ctr, True)
-        if nctrs == 0:
-            print('    ctr_name:{}, ctr_resources:{}, ctr_securityContext:{}'.format(
-                ctr.get('name', ''),
-                ctr.get('resources', ''),
-                ctr.get('securityContext', '')
-            ))
-            row_pod_container_start = current_row
-        else:
-            for col in range(header2column['ns'], header2column['qosClass'] + 1):
-                sheet.merge_cells(start_row=row_pod_container_start, end_row=current_row, start_column=col, end_column=col)
+    def get_cell_length(value):
+        # print('*** get_cell_length(): value={}'.format(value))
+        if str(value).find('\n'):
+            sentences = str(value).split('\n')
+            # print('*** sentences={}'.format(sentences))
+            max_length = 0
+            for s in sentences:
+                if len(s) > max_length:
+                    max_length = len(s)
+            return max_length
+        return len(str(value))
 
-        nctrs += 1
-        current_row = current_row + 1
-
-    for ctr in spec.get('containers', list()):
-        make_container_cells(current_row, ctr, False)
-        if nctrs == 0:
-            print('    ctr_name:{}, ctr_resources:{}, ctr_securityContext:{}'.format(
-                ctr.get('name', ''),
-                ctr.get('resources', ''),
-                ctr.get('securityContext', '')
-            ))
-            row_pod_container_start = current_row
-        else:
-            for col in range(header2column['ns'], header2column['qosClass'] + 1):
-                sheet.merge_cells(start_row=row_pod_container_start, end_row=current_row, start_column=col, end_column=col)
-
-        nctrs += 1
-        current_row = current_row + 1
-
-def get_cell_length(value):
-    # print('*** get_cell_length(): value={}'.format(value))
-    if str(value).find('\n'):
-        sentences = str(value).split('\n')
-        # print('*** sentences={}'.format(sentences))
+    for col in sheet.columns:
         max_length = 0
-        for s in sentences:
-            if len(s) > max_length:
-                max_length = len(s)
-        return max_length
-    return len(str(value))
+        colname = col[0].column_letter
+        # if col[0].value == 'container_image':
+        #     continue
 
-for col in sheet.columns:
-    max_length = 0
-    colname = col[0].column_letter
-    # if col[0].value == 'container_image':
-    #     continue
+        for cell in col:
+            length = get_cell_length(cell.value)
+            if length > max_length:
+                   max_length = length
 
-    for cell in col:
-        length = get_cell_length(cell.value)
-        if length > max_length:
-               max_length = length
+        target_width = 1
+        if col[0].value == 'description':
+            target_width = 60
+        elif col[0].value == 'url':
+            target_width = 30
+        elif col[0].value == 'custom_resources':
+            target_width = 30
+        elif col[0].value == 'how_to_install':
+            target_width = 30
+        elif col[0].value == 'affinity':
+            target_width = 30
+        elif col[0].value == 'container_image':
+            target_width = (len(str(col[0].value)) + 2) * 1.2
+        else:
+            target_width = (max_length + 2) * 1.2
 
-    target_width = 1
-    if col[0].value == 'description':
-        target_width = 60
-    elif col[0].value == 'url':
-        target_width = 30
-    elif col[0].value == 'custom_resources':
-        target_width = 30
-    elif col[0].value == 'how_to_install':
-        target_width = 30
-    elif col[0].value == 'affinity':
-        target_width = 30
-    elif col[0].value == 'container_image':
-        target_width = (len(str(col[0].value)) + 2) * 1.2
-    else:
-        target_width = (max_length + 2) * 1.2
+        sheet.column_dimensions[colname].width = target_width
 
-    sheet.column_dimensions[colname].width = target_width
+    book.save(args.output)
 
-book.save('result.xlsx')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--live', action='store_true')
+    parser.add_argument('--pod-json')
+    parser.add_argument('--node-json')
+    parser.add_argument('--description-yaml', default='./description.yaml')
+    parser.add_argument('--output', default='./newresult.xlsx')
+    args = parser.parse_args()
+
+    argparse_debug(args)
+    if args.live and (args.pod_json or args.node_json):
+        print('Cannot specify `--live` AND `--pod-json`.')
+        sys.exit(1)
+
+    main(args)
+    sys.exit()
+
+
 
 # desc = []
 # with open('description.yaml', 'w') as f:
