@@ -165,7 +165,7 @@ def normalize_owner_kind(owner_kind, owner_name, ns):
             return '{} ({})'.format(owner_kind, kind)
     return owner_kind
 
-def get_number_of_pods(selector, owner_kind, owner_name, ns):
+def get_number_of_pods(selector, owner_kind, owner_name, pod, ns):
     print('%% selector={}, owner_kind={}, owner_name={}, ns={}'.format(selector, owner_kind, owner_name, ns))
     if owner_kind == 'DaemonSet':
         print('  ### selector:{}'.format(selector))
@@ -188,7 +188,10 @@ def get_number_of_pods(selector, owner_kind, owner_name, ns):
     if owner_kind == 'Node' and ns == 'openshift-kube-scheduler':
         return 'Static Pod on masters'
     if owner_kind == 'Node' and (ns == 'openshift-kni-infra' or ns == 'openshift-nutanix-infra' or ns == 'openshift-openstack-infra' or ns == 'openshift-ovirt-infra' or ns == 'openshift-vsphere-infra'):
-        return 'Static Pod on masters'
+        if pod.startswith('haproxy'):
+            return 'Static Pod on masters'
+        else:
+            return 'Static Pod on masters and workers'
 
     output = subprocess.run('kubectl -n {} get {}/{} -o json'.format(ns, owner_kind, owner_name).split(), capture_output=True)
     json_data = json.loads(output.stdout)
@@ -340,7 +343,7 @@ def main(args):
                 sys.exit(1)
 
             # 'number of pods' column
-            xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], md['namespace']))
+            xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], pod_name, md['namespace']))
             xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
             xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
 
