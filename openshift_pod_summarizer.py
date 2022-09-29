@@ -187,6 +187,8 @@ def get_number_of_pods(selector, owner_kind, owner_name, ns):
         return 'Static Pod on masters'
     if owner_kind == 'Node' and ns == 'openshift-kube-scheduler':
         return 'Static Pod on masters'
+    if owner_kind == 'Node' and (ns == 'openshift-kni-infra' or ns == 'openshift-nutanix-infra' or ns == 'openshift-openstack-infra' or ns == 'openshift-ovirt-infra' or ns == 'openshift-vsphere-infra'):
+        return 'Static Pod on masters'
 
     output = subprocess.run('kubectl -n {} get {}/{} -o json'.format(ns, owner_kind, owner_name).split(), capture_output=True)
     json_data = json.loads(output.stdout)
