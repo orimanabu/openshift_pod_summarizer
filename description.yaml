@@ -135,7 +135,7 @@ descriptions:
 - ns: openshift-cloud-network-config-controller
   name: cloud-network-config-controller-XXXXXXXXXX-XXXXX
   url: https://github.com/openshift/cloud-network-config-controller
-  install: OCP inbox
+  install: OCP inbox, AWS
   crd:
     - name: cloudprivateipconfigs.cloud.network.openshift.io
       kind: CloudPrivateIPConfig
