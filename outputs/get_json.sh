@@ -13,4 +13,4 @@ fi
 # oc get statefulset -A -o json > statefulsets.json
 # oc get daemonset -A -o json > daemonsets.json
 # oc get catalogsource -A -o json > catalogsources.json
-kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json > all.json
+kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource,job,cronjob -o json > all.json
