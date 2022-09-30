@@ -75,22 +75,47 @@ def load_nodes():
             workers.append(hostname)
     return masters, workers
 
-def load_offline_data(json_path):
+# def load_offline_data(json_path):
+#     json_data = {}
+#     if json_path:
+#         with open(json_path, 'r') as f:
+#             print('** json from {}'.format(json_path))
+#             json_data = json.load(f)
+#     else:
+#         print('** json from `kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json`')
+#         output = subprocess.run('kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json'.split(), capture_output=True)
+#         json_data = json.loads(output.stdout)
+# 
+#     for item in json_data['items']:
+#         kind = item['kind']
+#         if not json_data.get(kind):
+#             json_data[kind] = []
+#         json_data[kind].append(item)
+# 
+#     return json_data
+
+def load_offline_data(json_files):
     json_data = {}
-    if json_path:
-        with open(json_path, 'r') as f:
-            print('** json from {}'.format(json_path))
-            json_data = json.load(f)
+    json_data['raw'] = []
+    if json_files:
+        for file in json_files:
+            with open(file, 'r') as f:
+                print('** json from {}'.format(file))
+                json_data['raw'].append(json.load(f))
+
     else:
         print('** json from `kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json`')
         output = subprocess.run('kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json'.split(), capture_output=True)
-        json_data = json.loads(output.stdout)
+        json_data['raw'].append(json.loads(output.stdout))
 
-    for item in json_data['items']:
-        kind = item['kind']
-        if not json_data.get(kind):
-            json_data[kind] = []
-        json_data[kind].append(item)
+    for data in json_data['raw']:
+        for item in data['items']:
+            kind = item['kind']
+            if not json_data.get(kind):
+                json_data[kind] = []
+            json_data[kind].append(item)
+
+    json_data['Pod'].sort(key=lambda x: (x['metadata']['namespace'], x['metadata']['name']))
 
     return json_data
 
@@ -130,7 +155,7 @@ def normalize_pod_name(name, owner_kind, node_name):
         # array[-1] = 'X' * len(array[-1])
         array[-1] = 'X' * 5
         return '-'.join(array)
-    if owner_kind == 'ReplicaSet':
+    if owner_kind == 'ReplicaSet' or owner_kind == 'Job':
         # array[-2] = 'X' * len(array[-2])
         array[-2] = 'X' * 10
         # array[-1] = 'X' * len(array[-1])
@@ -140,13 +165,18 @@ def normalize_pod_name(name, owner_kind, node_name):
         return name[0:-1] + 'X'
     if owner_kind == 'Node':
         return name.replace(node_name, 'HOSTNAME')
+    if owner_kind == 'ConfigMap':
+        array = name.replace(node_name, 'HOSTNAME').split('-')
+        array[-2] = 'X'
+        return '-'.join(array)
     if name.startswith('etcd-guard') or name.startswith('kube-apiserver-guard') or name.startswith('kube-controller-manager-guard') or name.startswith('openshift-kube-scheduler-guard'):
         return name.replace(node_name, 'HOSTNAME')
     return name
 
 def normalize_owner_name(owner_kind, owner_name):
+    print('  XXX normalize_owner_name():owner_kind={}, owner_name={}'.format(owner_kind, owner_name))
     array = owner_name.split('-')
-    if owner_kind == 'ReplicaSet':
+    if owner_kind == 'ReplicaSet' or owner_kind == 'Job':
         # array[-1] = 'X' * len(array[-1])
         array[-1] = 'X' * 10
         return '-'.join(array)
@@ -162,7 +192,8 @@ def find_resource_json(kind, ns, name):
     return None
     
 def normalize_owner_kind(owner_kind, owner_name, ns):
-    if owner_kind == 'ReplicaSet':
+    print('  XXX normalize_owner_kind():owner_kind={}, owner_name={}, ns={}'.format(owner_kind, owner_name, ns))
+    if owner_kind == 'ReplicaSet' or owner_kind == 'Job':
         json_data = find_resource_json(owner_kind, ns, owner_name)
         refs = json_data['metadata'].get('ownerReferences')
         if refs:
@@ -171,6 +202,7 @@ def normalize_owner_kind(owner_kind, owner_name, ns):
     return owner_kind
 
 def get_number_of_pods(selector, owner_kind, owner_name, pod, ns):
+    print('  XXX get_number_of_pods():selector={}, owner_kind={}, owner_name={}, pod={}, ns={}'.format(selector, owner_kind, owner_name, pod, ns))
     if owner_kind == 'DaemonSet':
         print('  ### selector:{}'.format(selector))
         # if 'node-role.kubernetes.io/master' in selector:
@@ -185,19 +217,27 @@ def get_number_of_pods(selector, owner_kind, owner_name, pod, ns):
 
     if owner_kind == 'Node' and ns == 'openshift-etcd':
         return 'Static Pod on masters'
+    if owner_kind == 'ConfigMap' and ns == 'openshift-etcd':
+        return 'Pod for maintaining Static Pod'
     if owner_kind == 'Node' and ns == 'openshift-kube-apiserver':
         return 'Static Pod on masters'
+    if owner_kind == 'ConfigMap' and ns == 'openshift-kube-apiserver':
+        return 'Pod for maintaining Static Pod'
     if owner_kind == 'Node' and ns == 'openshift-kube-controller-manager':
         return 'Static Pod on masters'
+    if owner_kind == 'ConfigMap' and ns == 'openshift-kube-controller-manager':
+        return 'Pod for maintaining Static Pod'
     if owner_kind == 'Node' and ns == 'openshift-kube-scheduler':
         return 'Static Pod on masters'
+    if owner_kind == 'ConfigMap' and ns == 'openshift-kube-scheduler':
+        return 'Pod for maintaining Static Pod'
     if owner_kind == 'Node' and (ns == 'openshift-kni-infra' or ns == 'openshift-nutanix-infra' or ns == 'openshift-openstack-infra' or ns == 'openshift-ovirt-infra' or ns == 'openshift-vsphere-infra'):
         if pod.startswith('haproxy'):
             return 'Static Pod on masters'
         else:
             return 'Static Pod on masters and workers'
 
-    if owner_kind == 'CatalogSource':
+    if owner_kind == 'CatalogSource' or owner_kind == 'Job':
         return ''
 
     json_data = find_resource_json(owner_kind, ns, owner_name)
@@ -299,8 +339,8 @@ def main(args):
         status = item['status']
         row = []
 
-        if status['phase'] != 'Running':
-            continue
+        # if status['phase'] != 'R{}'.format(spec.get('affinity', '')))unning':
+        #     continue
 
         refs = md.get('ownerReferences')
         # rename 'pod_name' column
@@ -335,6 +375,18 @@ def main(args):
 
             # 'number of pods' column
             xls_input_cell_by_key(sheet, current_row, 'num_of_pods', get_number_of_pods(spec.get('nodeSelector', ''), ref['kind'], ref['name'], pod_name, md['namespace']))
+            # xls_input_cell_by_key(
+            #     sheet,
+            #     current_row,
+            #     'num_of_pods',
+            #     get_number_of_pods(
+            #         spec.get('nodeSelector', ''),
+            #         ref['kind'],
+            #         normalize_owner_name(ref['kind'], ref['name']),
+            #         pod_name, md['namespace']
+            #     )
+            # )
+
             xls_input_cell_by_key(sheet, current_row, 'owner_kind', normalize_owner_kind(ref['kind'], ref['name'], md['namespace']))
             xls_input_cell_by_key(sheet, current_row, 'owner_name', normalize_owner_name(ref['kind'], ref['name']))
 
@@ -452,7 +504,7 @@ def argparse_debug(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--online', action='store_true', default=True)
-    parser.add_argument('--offline')
+    parser.add_argument('--offline', nargs='+', action='extend')
     parser.add_argument('--description-yaml', default='./description.yaml')
     parser.add_argument('--output', default='./newresult.xlsx')
     args = parser.parse_args()
