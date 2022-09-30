@@ -569,6 +569,22 @@ descriptions:
     - TLS certificateの管理
 
 - ns: openshift-etcd
+  name: installer-X-HOSTNAME
+  url: https://github.com/openshift/cluster-etcd-operator
+  install: OCP inbox
+  desc: |-
+    Static Podの管理をするためには、ホスト上のManifestファイルを作成したり更新したりする必要がある。
+    installer Podは、OperatorがStatic Podを管理するために、ホスト上のManifestファイルを作成する。
+
+- ns: openshift-etcd
+  name: revision-pruner-X-HOSTNAME
+  url: 
+  install: OCP inbox
+  desc: |-
+    Static Podの管理をするためには、ホスト上のManifestファイルを作成したり更新したりする必要がある。
+    revision-pruner Podは、ホスト上にあるStatic Podの古いManifestファイルを削除する。
+
+- ns: openshift-etcd
   name: etcd-guard-HOSTNAME
   url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
   install: OCP inbox
@@ -615,6 +631,13 @@ descriptions:
   desc: |-
     必要なPVの作成等、内部イメージレジストリの設定を管理するOperator。
     クラスターの初期構築時、クラスターの構成情報(特にストレージ)を見て内部イメージレジストリのリソースを作成する。
+
+- ns: openshift-image-registry
+  name: image-pruner-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/oc
+  install: OCP inbox
+  desc: |-
+    1日1回(0時0分)、oc adm image pruneを実行するCronJob
 
 - ns: openshift-image-registry
   name: image-registry-XXXXXXXXXX-XXXXX
@@ -713,6 +736,22 @@ descriptions:
     - Configuration observer
 
 - ns: openshift-kube-apiserver
+  name: installer-X-HOSTNAME
+  url: 
+  install: OCP inbox
+  desc: |-
+    Static Podの管理をするためには、ホスト上のManifestファイルを作成したり更新したりする必要がある。
+    installer Podは、OperatorがStatic Podを管理するために、ホスト上のManifestファイルを作成する。
+
+- ns: openshift-kube-apiserver
+  name: revision-pruner-X-HOSTNAME
+  url: 
+  install: OCP inbox
+  desc: |-
+    Static Podの管理をするためには、ホスト上のManifestファイルを作成したり更新したりする必要がある。
+    revision-pruner Podは、ホスト上にあるStatic Podの古いManifestファイルを削除する。
+
+- ns: openshift-kube-apiserver
   name: kube-apiserver-guard-HOSTNAME
   url: https://github.com/openshift/library-go/blob/master/pkg/operator/staticpod/controller/guard/manifests/guard-pod.yaml
   install: OCP inbox
@@ -747,6 +786,22 @@ descriptions:
     - Installer based on static pods
     - Configuration observer
     デフォルトでは、Prometheusのメトリックスをmetricsサービス経由でプロキシーする。
+
+- ns: openshift-kube-controller-manager
+  name: installer-X-HOSTNAME
+  url: 
+  install: OCP inbox
+  desc: |-
+    Static Podの管理をするためには、ホスト上のManifestファイルを作成したり更新したりする必要がある。
+    installer Podは、OperatorがStatic Podを管理するために、ホスト上のManifestファイルを作成する。
+
+- ns: openshift-kube-controller-manager
+  name: revision-pruner-X-HOSTNAME
+  url: 
+  install: OCP inbox
+  desc: |-
+    Static Podの管理をするためには、ホスト上のManifestファイルを作成したり更新したりする必要がある。
+    revision-pruner Podは、ホスト上にあるStatic Podの古いManifestファイルを削除する。
 
 - ns: openshift-kube-controller-manager
   name: kube-controller-manager-guard-HOSTNAME
@@ -787,6 +842,22 @@ descriptions:
     - Installer based on static pods
     - Configuration observer
     デフォルトでは、Prometheusのメトリックスをmetricsサービス経由でプロキシーする。
+
+- ns: openshift-kube-scheduler
+  name: installer-X-HOSTNAME
+  url: 
+  install: OCP inbox
+  desc: |-
+    Static Podの管理をするためには、ホスト上のManifestファイルを作成したり更新したりする必要がある。
+    installer Podは、OperatorがStatic Podを管理するために、ホスト上のManifestファイルを作成する。
+
+- ns: openshift-kube-scheduler
+  name: revision-pruner-X-HOSTNAME
+  url: 
+  install: OCP inbox
+  desc: |-
+    Static Podの管理をするためには、ホスト上のManifestファイルを作成したり更新したりする必要がある。
+    revision-pruner Podは、ホスト上にあるStatic Podの古いManifestファイルを削除する。
 
 - ns: openshift-kube-scheduler
   name: openshift-kube-scheduler-guard-HOSTNAME
@@ -1351,7 +1422,6 @@ descriptions:
   install: OCP inbox, OpenStack IPI
   desc: |-
     OpenStack IPI環境で、ノードおよびapi, api-intの名前解決をするCoreDNS
-    2
 
 - ns: openshift-openstack-infra
   name: haproxy-HOSTNAME
@@ -1376,6 +1446,13 @@ descriptions:
     - Operatorの依存関係を解決し、必要なものをインストールする
     - Operator Bundle (Operatorのメタデータ、Operatorが管理するCRD、Operatorが必要とするSA, Role, Deployment等のリソースを記載したCSV (ClusterServiceVersion) 等をまとめたもの)をpullして展開する
     - 必要なリソースをインストールする
+
+- ns: openshift-operator-lifecycle-manager
+  name: collect-profiles-XXXXXXXXXX-XXXXX
+  url: https://github.com/openshift/operator-framework-olm
+  install: OCP inbox
+  desc: |-
+    pprof URLに対して接続し、プロファイルデータを取得してConfigMapに保存するConjob
 
 - ns: openshift-operator-lifecycle-manager
   name: olm-operator-XXXXXXXXXX-XXXXX
