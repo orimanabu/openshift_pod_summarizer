@@ -527,17 +527,7 @@ descriptions:
       apiversion: config.openshift.io/v1
       url: https://github.com/openshift/api/blob/master/config/v1/0000_10_config-operator_01_dns.crd.yaml
   desc: |-
-    xxx
-
-    machineset-controller: /machineset-controller
-    machine-controller: /machine-controller-manager
-    nodelink-controller: /nodelink-controller
-    machine-healthcheck-controller: /machine-healthcheck
-    kube-rbac-proxy-machineset-mtrc: /usr/bin/kube-rbac-proxy
-    kube-rbac-proxy-machine-mtrc: /usr/bin/kube-rbac-proxy
-    kube-rbac-proxy-mhc-mtrc: /usr/bin/kube-rbac-proxy
-
-    mtrcはおそらくmetrics
+    内部DNS関連Podのインストール/管理を行うOperator
 
 - ns: openshift-dns
   name: dns-default-XXXXX
