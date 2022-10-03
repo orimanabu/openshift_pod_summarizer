@@ -99,9 +99,16 @@ def load_offline_data(json_files):
     json_data['raw'] = []
     if json_files:
         for file in json_files:
-            with open(file, 'r') as f:
-                print('** json from {}'.format(file))
-                json_data['raw'].append(json.load(f))
+            if file.endswith('.json'):
+                with open(file, 'r') as f:
+                    print('** json from {}'.format(file))
+                    json_data['raw'].append(json.load(f))
+            elif file.endswith('.yaml') or file.endswith('.yml'):
+                with open(file, 'r') as f:
+                    print('** json from {}'.format(file))
+                    json_data['raw'].append(yaml.load(f, Loader=yaml.FullLoader))
+            else:
+                print('unsupported file suffix:', file)
 
     else:
         print('** json from `kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json`')
@@ -317,8 +324,8 @@ def main(args):
     desc = load_desc(args.description_yaml)
     global alldata
     alldata = load_offline_data(args.offline)
-    masters, workers = load_nodes()
-    print_nodes(masters, workers)
+    # masters, workers = load_nodes()
+    # print_nodes(masters, workers)
 
     book = openpyxl.Workbook()
     sheet = book.active
