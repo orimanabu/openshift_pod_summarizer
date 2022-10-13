@@ -111,8 +111,8 @@ def load_offline_data(json_files):
                 print('unsupported file suffix:', file)
 
     else:
-        print('** json from `kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json`')
-        output = subprocess.run('kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource -o json'.split(), capture_output=True)
+        print('** json from `kubectl get -A pod,replicaset,statefulset,deployment,catalogsource,job,cronjob,replicationcontroller,deploymentconfig -o json`')
+        output = subprocess.run('kubectl get -A pod,replicaset,statefulset,deployment,catalogsource,job,cronjob,replicationcontroller,deploymentconfig -o json'.split(), capture_output=True)
         json_data['raw'].append(json.loads(output.stdout))
 
     for data in json_data['raw']:
@@ -156,8 +156,18 @@ def dict2yaml(obj):
 def ns_pod_key(ns, pod):
     return '{}__{}'.format(ns, pod)
 
-def normalize_pod_name(name, owner_kind, node_name):
+# def normalize_pod_name(name, owner_kind, node_name):
+def normalize_pod_name(pod):
+    md = pod['metadata']
+    refs = md.get('ownerReferences') 
+    spec = pod['spec']
+    name = md['name']
+    owner_kind = refs[0]['kind'] if refs else ''
+    node_name = spec['nodeName']
+
     array = name.split('-')
+    if len(array) == 1:
+        return name
     if owner_kind == 'DaemonSet' or owner_kind == 'CatalogSource':
         # array[-1] = 'X' * len(array[-1])
         array[-1] = 'X' * 5
@@ -213,6 +223,8 @@ def get_number_of_pods(selector, owner_kind, owner_name, pod, ns):
     if owner_kind == 'DaemonSet':
         print('  ### selector:{}'.format(selector))
         # if 'node-role.kubernetes.io/master' in selector:
+        if not selector:
+            return '# of nodes'
         if selector.get('node-role.kubernetes.io/master') == '':
             return '# of masters'
         # if 'node-role.kubernetes.io/worker' in selector:
@@ -351,10 +363,12 @@ def main(args):
 
         refs = md.get('ownerReferences')
         # rename 'pod_name' column
-        pod_name = normalize_pod_name(md['name'], refs[0]['kind'] if refs else '', spec['nodeName'])
+        # print('[ns:{}, pod_name:{}, phase:{}]'.format(md['namespace'], md['name'], status['phase']))
+        # pod_name = normalize_pod_name(md['name'], refs[0]['kind'] if refs else '', spec['nodeName'])
+        pod_name = normalize_pod_name(item)
 
         if pod_exists.get((md['namespace'], pod_name)):
-            print('  => SKIP')
+            print('  => SKIP ({})'.format(md['name']))
             continue
         pod_exists[(md['namespace'], pod_name)] = True
 
@@ -457,6 +471,8 @@ def main(args):
 
             nctrs += 1
             current_row = current_row + 1
+
+        print('  => DONE. ({})'.format(md['name']))
 
     def get_cell_length(value):
         # print('*** get_cell_length(): value={}'.format(value))
