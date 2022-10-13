@@ -8,4 +8,5 @@ fi
 
 # kubectl get -A pod,node,replicaset,statefulset,deployment,catalogsource,job,cronjob -o json > all.json
 # kubectl get -A pod,replicaset,statefulset,deployment,catalogsource,job,cronjob -o json > all.json
-kubectl get -A pod,replicaset,statefulset,deployment,catalogsource,job,cronjob -o yaml > all.yaml
+# kubectl get -A pod,replicaset,statefulset,deployment,catalogsource,job,cronjob,replicationcontroller,deploymentconfig -o yaml > all.yaml
+kubectl get -A pod,replicaset,statefulset,deployment,catalogsource,job,cronjob,replicationcontroller,deploymentconfig -o yaml > all.yaml
